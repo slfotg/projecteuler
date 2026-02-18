@@ -1,4 +1,4 @@
-# projecteuler README
+# Project Euler
 
 VSCode Extension that allows viewing Project Euler problems from your editor
 

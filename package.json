@@ -3,6 +3,7 @@
     "displayName": "Project Euler",
     "publisher": "slfotg",
     "description": "Allow viewing Project Euler problems from your editor",
+    "icon": "images/euler.png",
     "version": "0.0.1",
     "repository": {
         "type": "git",

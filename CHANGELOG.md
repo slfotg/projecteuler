@@ -8,6 +8,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Nothing yet
 
+## [0.0.2] - 2026-02-18
+
+### Minor Fixes
+
+- Prevent opening the same problem multiple times
+- Fix relative links in webview for other problems
+- Added icon
+
 ## [0.0.1] - 2026-02-17
 
 ### Initial release
@@ -17,5 +25,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added Codelens links to quickly open problems from code
 - Added a search command to search for problems by number
 
-[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/slfotg/projecteuler/releases/tag/v0.0.2
 [0.0.1]: https://github.com/slfotg/projecteuler/releases/tag/v0.0.1

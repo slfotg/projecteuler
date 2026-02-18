@@ -51,11 +51,15 @@ export class ProblemTreeDecorationProvider implements vscode.FileDecorationProvi
 export class ProblemViewProvider {
 
     private styleMainUri: vscode.Uri;
+    private scriptUri: vscode.Uri;
     private mathjaxConfig: vscode.Uri;
     private problemDataService: ProblemDataService;
 
+    private visibleProblems: { [key: string]: vscode.WebviewPanel } = {};
+
     constructor(context: vscode.ExtensionContext, problemDataService: ProblemDataService) {
         this.styleMainUri = vscode.Uri.joinPath(context.extensionUri, "media", "main.css");
+        this.scriptUri = vscode.Uri.joinPath(context.extensionUri, "media", "script.js");
         this.mathjaxConfig = vscode.Uri.joinPath(context.extensionUri, "media", "mathjax.config.js");
         this.problemDataService = problemDataService;
     }
@@ -66,6 +70,10 @@ export class ProblemViewProvider {
 
     public async showProblem(problemNumber?: string) {
         if (!problemNumber) {
+            return;
+        }
+        if (this._problemViewExists(problemNumber)) {
+            this._openExistingView(problemNumber);
             return;
         }
         const regex = new RegExp(/^[1-9]\d*$/g);
@@ -81,8 +89,34 @@ export class ProblemViewProvider {
         }
     }
 
+    public _openExistingView(id: string) {
+        const view = this.visibleProblems[id];
+        if (!view) {
+            throw new Error(`Problem view ${id} not found`);
+        }
+        view.reveal();
+    }
+
     private _showError(problemNumber: string) {
         vscode.window.showErrorMessage(`Couldn't find Problem ${problemNumber}`);
+    }
+
+    private _registerProblemView(id: string, view: vscode.WebviewPanel) {
+        this.visibleProblems[id] = view;
+
+        view.webview.onDidReceiveMessage(
+            (id) => {
+                vscode.commands.executeCommand(Command.Show, id);
+            }
+        );
+
+        view.onDidDispose(() => {
+            delete this.visibleProblems[id];
+        });
+    }
+
+    private _problemViewExists(id: string): boolean {
+        return !!this.visibleProblems[id];
     }
 
     private _showWebView(html: string, id: string) {
@@ -96,8 +130,10 @@ export class ProblemViewProvider {
                 enableFindWidget: true,
             },
         );
+        this._registerProblemView(id, panel);
         panel.iconPath = vscode.Uri.parse("https://projecteuler.net/favicons/favicon.ico");
         const styleMainUri = panel.webview.asWebviewUri(this.styleMainUri);
+        const scriptUri = panel.webview.asWebviewUri(this.scriptUri);
         const mathjaxConfig = panel.webview.asWebviewUri(this.mathjaxConfig);
 
         let subtitle = "";
@@ -139,6 +175,8 @@ export class ProblemViewProvider {
 
                 <script src="${mathjaxConfig}"></script>
                 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js?config=newcm"></script>
+
+                <script src="${scriptUri}"></script>
             </body>
             </html>
     `;
