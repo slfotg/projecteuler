@@ -1,0 +1,162 @@
+:root {
+   --color-white: #fff;
+   --color-orange: #f93;
+   --color-light-orange: #fb6;
+   --color-dark-orange: #f71;
+   --color-red: #a00;
+   --color-light-red: #e44;
+   --color-green: #070;
+   --color-blue: #009;
+   --color-light-blue: #07f;
+   --color-lighter-blue: #6bf;
+   --color-brown: #6b4e3d;
+   --color-light-brown: #b69481;
+   --color-black: #000;
+   --color-almost-black: #111;
+   --color-dark-grey: #333;
+   --color-light-grey: #bbb;
+   --color-pale-pink: #ffeaea;
+   --color-dark-green: #060;
+   --color-light-green: #5a5;
+}
+
+body {
+    padding: 10px 30px 30px;
+}
+
+hr {
+    height: 1px;
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    width: 100%;
+}
+
+
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+}
+
+@media (max-width: 600px) {
+    .section {
+        flex: 1 1 auto;
+        flex-direction: column;
+    }
+    .label {
+        flex-basis: 0px;
+    }
+    .description {
+        padding-left: 20px;
+    }
+}
+
+mjx-container[jax="SVG"] {
+    direction: ltr;
+    white-space: nowrap;
+}
+
+mjx-container[display] {
+    display: block;
+    text-align: center;
+    justify-content: center;
+    margin: .7em 0;
+    padding: .3em 2px;
+}
+
+.strong {
+    font-weight: bold;
+}
+
+.red {
+   color: var(--color-red);
+}
+.green {
+   color:var(--color-green);
+}
+.blue {
+   color:var(--color-blue);
+}
+.light_blue {
+   color:var(--color-light-blue);
+}
+.orange {
+   color:var(--color-orange);
+}
+.dark_green {
+   color:var(--color-dark-green);
+}
+.brown {
+   color: var(--color-brown);
+}
+.center {
+    text-align: center !important;
+}
+.dark_img {
+    background-color: #fff;
+    padding: 10px;
+    border: 2px solid var(--vscode-dropdown-border);
+}
+.margin_left {
+    margin-left: 100px;
+}
+.monospace {
+    font-family: var(--vscode-editor-font-family);
+}
+.problem_content {
+    font-size: 110%;
+    padding: 10px;
+}
+dfn.tooltip, strong.tooltip {
+    border-bottom: 1px solid var(--vscode-editorHoverWidget-highlightForeground);
+}
+.tooltip {
+   position: relative;
+   display: inline-block;
+   cursor: help;
+}
+.tooltip .tooltiptext, .tooltip .tooltiptext_narrow, .tooltip .tooltiptext_left, .tooltip .tooltiptext_right, .tooltip .tooltiptext_wide, .tooltip .tooltiptext_narrower {
+   line-height: initial;
+   visibility: hidden;
+   background-color: var(--vscode-editor-background);
+   /* color: var(--vscode-editor-foreground); */
+   border: 1px solid var(--vscode-dropdown-border);
+   text-align: center;
+   border-radius: 5px;
+   padding: 5px 10px;
+   position: absolute;
+   z-index: 1;
+   font-weight: normal;
+   font-size: 80%;
+   top: 100%;
+   margin-top: 10px;
+   width: 200px;
+   word-wrap: break-word;
+}
+.tooltip .tooltiptext  {
+   left: 50%;
+   margin-left: -100px;
+}
+.tooltip .tooltiptext_narrow {
+   left: 50%;
+   margin-left: -60px;
+   width: 120px;
+}
+.tooltip .tooltiptext_narrower {
+   left: 50%;
+   margin-left: -40px;
+   width: 80px;
+}
+.tooltip .tooltiptext_left {
+   left: 105%;
+}
+.tooltip .tooltiptext_right {
+   right: 105%;
+}
+.tooltip .tooltiptext_wide {
+   left: 105%;
+   width: 250px;
+}
+
+.tooltip:hover .tooltiptext, .tooltip:hover .tooltiptext_narrow, .tooltip:hover .tooltiptext_left, .tooltip:hover .tooltiptext_right, .tooltip:hover .tooltiptext_wide, .tooltip:hover .tooltiptext_narrower {
+   visibility: visible;
+}

@@ -1,0 +1,146 @@
+import * as vscode from "vscode";
+import { Command } from "./config";
+import { ProblemData, ProblemDataService } from "./service";
+
+export class ProblemTreeDataProvider implements vscode.TreeDataProvider<ProblemData> {
+    onDidChangeTreeData?: vscode.Event<void | ProblemData | ProblemData[] | null | undefined> | undefined;
+
+    problemDataService: ProblemDataService;
+
+    constructor(problemDataService: ProblemDataService) {
+        this.problemDataService = problemDataService;
+    }
+
+    getTreeItem(element: ProblemData): vscode.TreeItem {
+        let item = new vscode.TreeItem(`Problem ${element.ID}: ${element.Title}`);
+        item.resourceUri = vscode.Uri.parse(`https://projecteuler.net/problem=${element.ID}?solved=${element["Solve Status"]}`);
+        item.command = {
+            title: `Show Problem ${element.ID}`,
+            tooltip: `Show Problem ${element.ID}`,
+            command: Command.Show,
+            arguments: [element.ID],
+        };
+        item.tooltip = `Show Problem ${element.ID}`;
+        return item;
+    }
+
+    getChildren(element?: ProblemData | undefined): vscode.ProviderResult<ProblemData[]> {
+        if (element) {
+            return Promise.resolve([]);
+        } else {
+            return Promise.resolve(Object.values(this.problemDataService.getProblemInfo()));
+        }
+    }
+
+}
+
+export class ProblemTreeDecorationProvider implements vscode.FileDecorationProvider {
+    onDidChangeFileDecorations?: vscode.Event<vscode.Uri | vscode.Uri[] | undefined> | undefined;
+    provideFileDecoration(uri: vscode.Uri, token: vscode.CancellationToken): vscode.ProviderResult<vscode.FileDecoration> {
+        if (uri.scheme === "https" && uri.authority === "projecteuler.net") {
+            for (const param of uri.query.split("&")) {
+                if (param.trim() === "solved=1") {
+                    return new vscode.FileDecoration("✓", "Problem Solved", new vscode.ThemeColor("charts.green"));
+                }
+            };
+        }
+        return null;
+    }
+}
+
+export class ProblemViewProvider {
+
+    private styleMainUri: vscode.Uri;
+    private mathjaxConfig: vscode.Uri;
+    private problemDataService: ProblemDataService;
+
+    constructor(context: vscode.ExtensionContext, problemDataService: ProblemDataService) {
+        this.styleMainUri = vscode.Uri.joinPath(context.extensionUri, "media", "main.css");
+        this.mathjaxConfig = vscode.Uri.joinPath(context.extensionUri, "media", "mathjax.config.js");
+        this.problemDataService = problemDataService;
+    }
+
+    public register(): vscode.Disposable {
+        return vscode.commands.registerCommand(Command.Show, this.showProblem, this);
+    }
+
+    public async showProblem(problemNumber?: string) {
+        if (!problemNumber) {
+            return;
+        }
+        const regex = new RegExp(/^[1-9]\d*$/g);
+        if (regex.exec(problemNumber) !== null) {
+            const url = `https://projecteuler.net/minimal=${problemNumber}`;
+            const response = await fetch(url);
+            const text = await response.text();
+            if (response.status !== 200 || text === "Data for that problem cannot be found") {
+                this._showError(problemNumber);
+            } else {
+                this._showWebView(text, problemNumber);
+            }
+        }
+    }
+
+    private _showError(problemNumber: string) {
+        vscode.window.showErrorMessage(`Couldn't find Problem ${problemNumber}`);
+    }
+
+    private _showWebView(html: string, id: string) {
+        let panel = vscode.window.createWebviewPanel(
+            "eulerProblemView",
+            `Problem ${id}`,
+            vscode.ViewColumn.One,
+            {
+                enableScripts: true,
+                retainContextWhenHidden: true,
+                enableFindWidget: true,
+            },
+        );
+        panel.iconPath = vscode.Uri.parse("https://projecteuler.net/favicons/favicon.ico");
+        const styleMainUri = panel.webview.asWebviewUri(this.styleMainUri);
+        const mathjaxConfig = panel.webview.asWebviewUri(this.mathjaxConfig);
+
+        let subtitle = "";
+        let subtitleData = this.problemDataService.getTitle(id);
+        if (subtitleData) {
+            subtitle = `${subtitleData}`;
+        } else {
+            subtitle = "";
+            console.warn("Problem info not found in global state");
+        }
+
+        let fixedHtml = html.replaceAll('"resources/', '"https://projecteuler.net/resources/');
+        fixedHtml = fixedHtml.replaceAll(/href="about=(\w+)"/g, "href=\"https://projecteuler.net/about=$1\"");
+
+        panel.webview.html = `<!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <meta http-equiv="Content-Security-Policy"
+                        content="default-src 'none';
+                        img-src https://projecteuler.net/;
+                        script-src 'self' 'unsafe-inline' ${panel.webview.cspSource} https://cdn.jsdelivr.net/npm/mathjax@4/ https://cdn.jsdelivr.net/npm/@mathjax/ https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/;
+                        style-src 'self' 'unsafe-inline' ${panel.webview.cspSource} https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/ https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css;
+                        object-src 'none';
+                        base-uri 'self';
+                        frame-ancestors 'self';
+                        worker-src 'self' blob:;">
+                <link href="${styleMainUri}" rel="stylesheet">
+                <title>Problem ${id}</title>
+            </head>
+            <body>
+                <div class="content">
+                <h2><a href="https://projecteuler.net/problem=${id}">Problem ${id}</a>: ${subtitle}</h2>
+                <div class="problem_content">
+                ${fixedHtml}
+                </div>
+                </div>
+
+                <script src="${mathjaxConfig}"></script>
+                <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-svg.js?config=newcm"></script>
+            </body>
+            </html>
+    `;
+    }
+}
