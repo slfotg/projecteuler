@@ -4,6 +4,10 @@
     "publisher": "slfotg",
     "description": "Allow viewing Project Euler problems from your editor",
     "version": "0.0.1",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/slfotg/projecteuler"
+    },
     "engines": {
         "vscode": "^1.109.0"
     },
