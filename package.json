@@ -1,6 +1,7 @@
 {
     "name": "projecteuler",
     "displayName": "Project Euler",
+    "publisher": "slfotg",
     "description": "",
     "version": "0.0.1",
     "engines": {
