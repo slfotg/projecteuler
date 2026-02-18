@@ -6,4 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+- Nothing yet
+
+## [0.0.1] - 2026-02-17
+
+### Initial release
+
+- Added webview to view Project Euler problems
+- Added treeview to view all Project Euler problems numbers and titles
+- Added Codelens links to quickly open problems from code
+- Added a search command to search for problems by number
+
+[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/slfotg/projecteuler/releases/tag/v0.0.1
