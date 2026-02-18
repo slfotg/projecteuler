@@ -2,7 +2,7 @@
     "name": "projecteuler",
     "displayName": "Project Euler",
     "publisher": "slfotg",
-    "description": "",
+    "description": "Allow viewing Project Euler problems from your editor",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.109.0"
