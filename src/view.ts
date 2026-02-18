@@ -55,7 +55,7 @@ export class ProblemViewProvider {
     private mathjaxConfig: vscode.Uri;
     private problemDataService: ProblemDataService;
 
-    private visibleProblems: { [key: string]: vscode.WebviewPanel } = {};
+    private visibleProblems: { [key: number]: vscode.WebviewPanel } = {};
 
     constructor(context: vscode.ExtensionContext, problemDataService: ProblemDataService) {
         this.styleMainUri = vscode.Uri.joinPath(context.extensionUri, "media", "main.css");
@@ -68,28 +68,27 @@ export class ProblemViewProvider {
         return vscode.commands.registerCommand(Command.Show, this.showProblem, this);
     }
 
-    public async showProblem(problemNumber?: string) {
+    public showProblem(problemNumber?: string | number) {
         if (!problemNumber) {
+            this._showError(problemNumber);
             return;
         }
-        if (this._problemViewExists(problemNumber)) {
-            this._openExistingView(problemNumber);
+        let id = +problemNumber;
+        if (!id) {
+            this._showError(id);
             return;
         }
-        const regex = new RegExp(/^[1-9]\d*$/g);
-        if (regex.exec(problemNumber) !== null) {
-            const url = `https://projecteuler.net/minimal=${problemNumber}`;
-            const response = await fetch(url);
-            const text = await response.text();
-            if (response.status !== 200 || text === "Data for that problem cannot be found") {
-                this._showError(problemNumber);
-            } else {
-                this._showWebView(text, problemNumber);
-            }
+        if (this._problemViewExists(id)) {
+            this._openExistingView(id);
+            return;
         }
+
+        this.problemDataService.getProblemData(id)
+            .then((text) => this._showWebView(text, id))
+            .catch((_) => this._showError(id));
     }
 
-    public _openExistingView(id: string) {
+    public _openExistingView(id: number) {
         const view = this.visibleProblems[id];
         if (!view) {
             throw new Error(`Problem view ${id} not found`);
@@ -97,11 +96,11 @@ export class ProblemViewProvider {
         view.reveal();
     }
 
-    private _showError(problemNumber: string) {
+    private _showError(problemNumber?: string | number) {
         vscode.window.showErrorMessage(`Couldn't find Problem ${problemNumber}`);
     }
 
-    private _registerProblemView(id: string, view: vscode.WebviewPanel) {
+    private _registerProblemView(id: number, view: vscode.WebviewPanel) {
         this.visibleProblems[id] = view;
 
         view.webview.onDidReceiveMessage(
@@ -115,11 +114,11 @@ export class ProblemViewProvider {
         });
     }
 
-    private _problemViewExists(id: string): boolean {
+    private _problemViewExists(id: number): boolean {
         return !!this.visibleProblems[id];
     }
 
-    private _showWebView(html: string, id: string) {
+    private _showWebView(html: string, id: number) {
         let panel = vscode.window.createWebviewPanel(
             "eulerProblemView",
             `Problem ${id}`,

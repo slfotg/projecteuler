@@ -29,13 +29,3 @@ VSCode 1.109.0 or higher
 This extension contributes the following settings:
 
 * `projecteuler.enableCodeLens`: Enable/disable CodeLens links to problems (matching 'pe=###', 'problem=###' or 'problem = ###').
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-### 0.0.1
-
-Initial release

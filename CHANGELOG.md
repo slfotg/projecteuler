@@ -26,5 +26,5 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added a search command to search for problems by number
 
 [Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.2...HEAD
-[0.0.2]: https://github.com/slfotg/projecteuler/releases/tag/v0.0.2
+[0.0.2]: https://github.com/slfotg/projecteuler/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/slfotg/projecteuler/releases/tag/v0.0.1
