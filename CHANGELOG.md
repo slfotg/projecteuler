@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- Nothing yet
+
+## [0.0.3] - 2026-02-18
+
 ### Added
 
 - Caching of problem resources in local storage
@@ -34,6 +38,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added Codelens links to quickly open problems from code
 - Added a search command to search for problems by number
 
-[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/slfotg/projecteuler/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/slfotg/projecteuler/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/slfotg/projecteuler/releases/tag/v0.0.1
