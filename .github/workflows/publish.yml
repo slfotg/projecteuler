@@ -14,8 +14,7 @@ jobs:
               with:
                   node-version: 24
             - run: npm ci
-            - uses: lannonbr/vsce-action@4.0.0
+            - uses: HaaLeo/publish-vscode-extension@v2
               with:
-                  args: "publish -p $VSCE_TOKEN"
-              env:
-                  VSCE_TOKEN: ${{ secrets.VSCODE_PAT }}
+                  pat: ${{ secrets.VSCODE_PAT }}
+                  registryUrl: https://marketplace.visualstudio.com
