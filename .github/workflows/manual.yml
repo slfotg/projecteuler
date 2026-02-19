@@ -1,9 +1,6 @@
-name: release
+name: manual_openvfx
 
-on:
-    push:
-        tags:
-            - "v[0-9]+.[0-9]+.[0-9]+"
+on: workflow_dispatch
 
 jobs:
     release:
@@ -18,8 +15,3 @@ jobs:
               uses: HaaLeo/publish-vscode-extension@v2
               with:
                   pat: ${{ secrets.OPEN_VSX_TOKEN }}
-            - name: Publish to Visual Studio Marketplace
-              uses: HaaLeo/publish-vscode-extension@v2
-              with:
-                  pat: ${{ secrets.VSCODE_PAT }}
-                  registryUrl: https://marketplace.visualstudio.com
