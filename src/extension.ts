@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Command } from "./config";
 import { ProblemTreeDataProvider, ProblemTreeDecorationProvider, ProblemViewProvider } from "./view";
-import { ProblemDataService } from "./service";
+import { downloadProblem, ProblemDataService } from "./service";
 import { EulerLensProvider } from "./lens";
 import { EulerResourceProvider } from "./resource";
 
@@ -25,6 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.workspace.registerTextDocumentContentProvider("resource", resourceProvider),
         vscode.commands.registerCommand(Command.Search, searchProblem),
         vscode.commands.registerCommand(Command.Show, viewProvider.showProblem, viewProvider),
+        vscode.commands.registerCommand(Command.ShowProblemData, viewProvider.showProblemData, viewProvider),
         vscode.commands.registerCommand(Command.Refresh, treeProvider.refresh, treeProvider),
         vscode.commands.registerCommand(Command.Clear, dataService.clearProblemInfo, dataService),
         vscode.commands.registerCommand(Command.Load, dataService.updateProblemInfo, dataService),
