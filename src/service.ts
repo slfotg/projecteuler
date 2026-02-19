@@ -51,7 +51,7 @@ export class ProblemDataService {
         {
             let images = $("img");
             for (let i = 0; i < images.length; i += 1) {
-                if (images[i].attribs.src && images[i].attribs.src.startsWith("resources")) {
+                if (images[i].attribs && images[i].attribs.src && images[i].attribs.src.startsWith("resources")) {
                     let path = vscode.Uri.parse(images[i].attribs.src).path;
                     let uri = vscode.Uri.joinPath(ProblemDataService.basePath, path);
                     let target = await this._download(uri, path);
@@ -64,15 +64,17 @@ export class ProblemDataService {
         {
             let links = $("a");
             for (let i = 0; i < links.length; i += 1) {
-                let href = links[i].attribs.href;
-                if (href) {
-                    if (href.startsWith("about")) {
-                        links[i].attribs.href = `${vscode.Uri.joinPath(ProblemDataService.basePath, href)}`;
-                    } else if (href.startsWith("resources")) {
-                        let path = vscode.Uri.parse(links[i].attribs.href).path;
-                        let uri = vscode.Uri.joinPath(ProblemDataService.basePath, path);
-                        await this._download(uri, path);
-                        links[i].attribs.class = "linked-resource";
+                if (links[i].attribs) {
+                    let href = links[i].attribs.href;
+                    if (href) {
+                        if (href.startsWith("about")) {
+                            links[i].attribs.href = `${vscode.Uri.joinPath(ProblemDataService.basePath, href)}`;
+                        } else if (href.startsWith("resources")) {
+                            let path = vscode.Uri.parse(links[i].attribs.href).path;
+                            let uri = vscode.Uri.joinPath(ProblemDataService.basePath, path);
+                            await this._download(uri, path);
+                            links[i].attribs.class = "linked-resource";
+                        }
                     }
                 }
             }
