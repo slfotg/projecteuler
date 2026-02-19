@@ -50,19 +50,6 @@ pre {
     }
 }
 
-mjx-container[jax="SVG"] {
-    direction: ltr;
-    white-space: nowrap;
-}
-
-mjx-container[display] {
-    display: block;
-    text-align: center;
-    justify-content: center;
-    margin: .7em 0;
-    padding: .3em 2px;
-}
-
 .strong {
     font-weight: bold;
 }
@@ -103,7 +90,7 @@ mjx-container[display] {
     font-family: var(--vscode-editor-font-family);
 }
 .problem_content {
-    font-size: 110%;
+    font-size: 125%;
     padding: 10px;
 }
 dfn.tooltip, strong.tooltip {

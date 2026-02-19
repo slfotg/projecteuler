@@ -4,7 +4,7 @@
     "publisher": "slfotg",
     "description": "Allow viewing Project Euler problems from your editor",
     "icon": "images/euler.png",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "repository": {
         "type": "git",
         "url": "https://github.com/slfotg/projecteuler"

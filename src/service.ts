@@ -98,8 +98,15 @@ export class ProblemDataService {
         }
     }
 
-    public getTitle(id: number | string): string {
-        return this.getProblemInfo()[+id].Title;
+    public async getTitle(id: number | string): Promise<string> {
+        let problemInfo = this.getProblemInfo();
+        if (Object.keys(problemInfo).length === 0) {
+            await this.updateProblemInfo();
+            problemInfo = this.getProblemInfo();
+            return (problemInfo && problemInfo[+id]) ? problemInfo[+id].Title : "";
+        } else {
+            return problemInfo[+id] ? problemInfo[+id].Title : "";
+        }
     }
 
     private async _fetchProblem(id: string | number): Promise<Response> {
@@ -128,6 +135,6 @@ export class ProblemDataService {
         }
 
         this.context.globalState.update(ProblemDataService.problemInfoKey, problemInfo);
-        vscode.commands.executeCommand(Command.Refresh);
+        await vscode.commands.executeCommand(Command.Refresh);
     }
 }

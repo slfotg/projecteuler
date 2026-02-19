@@ -108,12 +108,10 @@ export class ProblemViewProvider {
 
         view.webview.onDidReceiveMessage(
             (message) => {
-                console.log(message);
                 if (message["problem"]) {
                     vscode.commands.executeCommand(Command.Show, message["problem"]);
                 } else if (message["download"]) {
                     const uri = vscode.Uri.parse('resource:' + message["filename"] + "?resource=" + message["download"]);
-                    // const uri = vscode.Uri.joinPath(this.globalStorageUri, message["download"]);
                     vscode.workspace.openTextDocument(uri).then((doc) => {
                         vscode.window.showTextDocument(doc);
                     });
@@ -150,7 +148,7 @@ export class ProblemViewProvider {
         const mathjaxConfig = panel.webview.asWebviewUri(this.mathjaxConfig);
 
         let subtitle = "";
-        let subtitleData = this.problemDataService.getTitle(id);
+        let subtitleData = await this.problemDataService.getTitle(id);
         if (subtitleData) {
             subtitle = `${subtitleData}`;
         } else {
