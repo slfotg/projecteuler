@@ -4,7 +4,7 @@
     "publisher": "slfotg",
     "description": "Allow viewing Project Euler problems from your editor",
     "icon": "images/euler.png",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "repository": {
         "type": "git",
         "url": "https://github.com/slfotg/projecteuler"
@@ -38,6 +38,12 @@
                 }
             ]
         },
+        "viewsWelcome": [
+            {
+                "view": "projecteuler.problemView",
+                "contents": "No problem data found.\n[Refresh](command:projecteuler.loadProblemData)"
+            }
+        ],
         "commands": [
             {
                 "command": "projecteuler.searchProblem",
@@ -46,13 +52,24 @@
             {
                 "command": "projecteuler.showProblem",
                 "title": "Euler: Show Problem"
+            },
+            {
+                "command": "projecteuler.refreshTree",
+                "title": "Euler: Refresh Tree"
+            },
+            {
+                "command": "projecteuler.clearTreeData",
+                "title": "Euler: Clear Tree Data"
+            },
+            {
+                "command": "projecteuler.loadProblemData",
+                "title": "Euler: Load Problem Data"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
-                    "command": "projecteuler.showProblem",
-                    "when": "false"
+                    "command": "projecteuler.searchProblem"
                 }
             ]
         }
@@ -69,8 +86,10 @@
         "test": "vscode-test"
     },
     "devDependencies": {
+        "@types/cheerio": "^0.22.35",
         "@types/mocha": "^10.0.7",
         "@types/node": "20.x",
+        "@types/papaparse": "^5.5.2",
         "@types/vscode": "^1.109.0",
         "@typescript-eslint/eslint-plugin": "^7.14.1",
         "@typescript-eslint/parser": "^7.11.0",
@@ -80,10 +99,10 @@
         "ts-loader": "^9.5.1",
         "typescript": "^5.4.5",
         "webpack": "^5.92.1",
-        "webpack-cli": "^5.1.4",
-        "@types/papaparse": "^5.5.2"
+        "webpack-cli": "^5.1.4"
     },
     "dependencies": {
+        "cheerio": "^1.1.0",
         "papaparse": "^5.5.3"
     }
 }

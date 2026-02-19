@@ -3,12 +3,17 @@ import { Command } from "./config";
 import { ProblemData, ProblemDataService } from "./service";
 
 export class ProblemTreeDataProvider implements vscode.TreeDataProvider<ProblemData> {
-    onDidChangeTreeData?: vscode.Event<void | ProblemData | ProblemData[] | null | undefined> | undefined;
+    private _onDidChangeTreeData: vscode.EventEmitter<void | ProblemData | ProblemData[] | null | undefined> = new vscode.EventEmitter<void | ProblemData | ProblemData[] | null | undefined>();
+    readonly onDidChangeTreeData: vscode.Event<void | ProblemData | ProblemData[] | null | undefined> = this._onDidChangeTreeData.event;
 
-    problemDataService: ProblemDataService;
+    private problemDataService: ProblemDataService;
 
     constructor(problemDataService: ProblemDataService) {
         this.problemDataService = problemDataService;
+    }
+
+    refresh(): void {
+        this._onDidChangeTreeData.fire();
     }
 
     getTreeItem(element: ProblemData): vscode.TreeItem {
@@ -50,6 +55,8 @@ export class ProblemTreeDecorationProvider implements vscode.FileDecorationProvi
 
 export class ProblemViewProvider {
 
+    private mediaUri: vscode.Uri;
+    private globalStorageUri: vscode.Uri;
     private styleMainUri: vscode.Uri;
     private scriptUri: vscode.Uri;
     private mathjaxConfig: vscode.Uri;
@@ -58,14 +65,12 @@ export class ProblemViewProvider {
     private visibleProblems: { [key: number]: vscode.WebviewPanel } = {};
 
     constructor(context: vscode.ExtensionContext, problemDataService: ProblemDataService) {
+        this.mediaUri = vscode.Uri.joinPath(context.extensionUri, "media");
+        this.globalStorageUri = context.globalStorageUri;
         this.styleMainUri = vscode.Uri.joinPath(context.extensionUri, "media", "main.css");
         this.scriptUri = vscode.Uri.joinPath(context.extensionUri, "media", "script.js");
         this.mathjaxConfig = vscode.Uri.joinPath(context.extensionUri, "media", "mathjax.config.js");
         this.problemDataService = problemDataService;
-    }
-
-    public register(): vscode.Disposable {
-        return vscode.commands.registerCommand(Command.Show, this.showProblem, this);
     }
 
     public showProblem(problemNumber?: string | number) {
@@ -83,9 +88,7 @@ export class ProblemViewProvider {
             return;
         }
 
-        this.problemDataService.getProblemData(id)
-            .then((text) => this._showWebView(text, id))
-            .catch((_) => this._showError(id));
+        this._showWebView(id);
     }
 
     public _openExistingView(id: number) {
@@ -104,8 +107,17 @@ export class ProblemViewProvider {
         this.visibleProblems[id] = view;
 
         view.webview.onDidReceiveMessage(
-            (id) => {
-                vscode.commands.executeCommand(Command.Show, id);
+            (message) => {
+                console.log(message);
+                if (message["problem"]) {
+                    vscode.commands.executeCommand(Command.Show, message["problem"]);
+                } else if (message["download"]) {
+                    const uri = vscode.Uri.parse('resource:' + message["filename"] + "?resource=" + message["download"]);
+                    // const uri = vscode.Uri.joinPath(this.globalStorageUri, message["download"]);
+                    vscode.workspace.openTextDocument(uri).then((doc) => {
+                        vscode.window.showTextDocument(doc);
+                    });
+                }
             }
         );
 
@@ -118,7 +130,7 @@ export class ProblemViewProvider {
         return !!this.visibleProblems[id];
     }
 
-    private _showWebView(html: string, id: number) {
+    private async _showWebView(id: number) {
         let panel = vscode.window.createWebviewPanel(
             "eulerProblemView",
             `Problem ${id}`,
@@ -127,8 +139,10 @@ export class ProblemViewProvider {
                 enableScripts: true,
                 retainContextWhenHidden: true,
                 enableFindWidget: true,
+                localResourceRoots: [this.mediaUri, this.globalStorageUri] // restrict resources
             },
         );
+        let html = await this.problemDataService.getProblemData(id, panel);
         this._registerProblemView(id, panel);
         panel.iconPath = vscode.Uri.parse("https://projecteuler.net/favicons/favicon.ico");
         const styleMainUri = panel.webview.asWebviewUri(this.styleMainUri);
@@ -144,8 +158,9 @@ export class ProblemViewProvider {
             console.warn("Problem info not found in global state");
         }
 
-        let fixedHtml = html.replaceAll('"resources/', '"https://projecteuler.net/resources/');
-        fixedHtml = fixedHtml.replaceAll(/href="about=(\w+)"/g, "href=\"https://projecteuler.net/about=$1\"");
+        // let fixedHtml = html.replaceAll('"resources/', '"https://projecteuler.net/resources/');
+        // fixedHtml = fixedHtml.replaceAll(/href="about=(\w+)"/g, "href=\"https://projecteuler.net/about=$1\"");
+        // let target = panel.webview.asWebviewUri(vscode.Uri.joinPath(this.globalStorageUri, "resources", "images", "0015.png"));
 
         panel.webview.html = `<!DOCTYPE html>
             <html lang="en">
@@ -154,7 +169,7 @@ export class ProblemViewProvider {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <meta http-equiv="Content-Security-Policy"
                         content="default-src 'none';
-                        img-src https://projecteuler.net/;
+                        img-src ${panel.webview.cspSource};
                         script-src 'self' 'unsafe-inline' ${panel.webview.cspSource} https://cdn.jsdelivr.net/npm/mathjax@4/ https://cdn.jsdelivr.net/npm/@mathjax/ https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/;
                         style-src 'self' 'unsafe-inline' ${panel.webview.cspSource} https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/ https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css;
                         object-src 'none';
@@ -167,9 +182,7 @@ export class ProblemViewProvider {
             <body>
                 <div class="content">
                 <h2><a href="https://projecteuler.net/problem=${id}">Problem ${id}</a>: ${subtitle}</h2>
-                <div class="problem_content">
-                ${fixedHtml}
-                </div>
+                ${html}
                 </div>
 
                 <script src="${mathjaxConfig}"></script>

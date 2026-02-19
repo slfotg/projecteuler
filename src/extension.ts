@@ -3,6 +3,7 @@ import { Command } from "./config";
 import { ProblemTreeDataProvider, ProblemTreeDecorationProvider, ProblemViewProvider } from "./view";
 import { ProblemDataService } from "./service";
 import { EulerLensProvider } from "./lens";
+import { EulerResourceProvider } from "./resource";
 
 async function searchProblem() {
     const problemNumber = await vscode.window
@@ -18,16 +19,19 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCodeLensProvider("*", new EulerLensProvider());
     const dataService = new ProblemDataService(context);
     const viewProvider = new ProblemViewProvider(context, dataService);
+    const resourceProvider = new EulerResourceProvider(context);
+    const treeProvider = new ProblemTreeDataProvider(dataService);
     context.subscriptions.push(
+        vscode.workspace.registerTextDocumentContentProvider("resource", resourceProvider),
         vscode.commands.registerCommand(Command.Search, searchProblem),
-        viewProvider.register(),
+        vscode.commands.registerCommand(Command.Show, viewProvider.showProblem, viewProvider),
+        vscode.commands.registerCommand(Command.Refresh, treeProvider.refresh, treeProvider),
+        vscode.commands.registerCommand(Command.Clear, dataService.clearProblemInfo, dataService),
+        vscode.commands.registerCommand(Command.Load, dataService.updateProblemInfo, dataService),
     );
 
-    dataService.updateProblemInfo().then(() => {
-        vscode.window.registerTreeDataProvider("projecteuler.problemView", new ProblemTreeDataProvider(dataService));
-    });
+    vscode.window.registerTreeDataProvider("projecteuler.problemView", treeProvider);
     vscode.window.registerFileDecorationProvider(new ProblemTreeDecorationProvider());
-    context.secrets;
 }
 
 // This method is called when your extension is deactivated

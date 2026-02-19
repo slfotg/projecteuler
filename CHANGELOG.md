@@ -6,7 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Nothing yet
+### Added
+
+- Caching of problem resources in local storage
+- Caching of problem HTML in local storage
+- Text files associated with problems can be opened in a new editor with a single click
+- New commands for clearing, loading and refreshing tree view data
+
+### Changed
+
+- Modified how problem data is retrieved
 
 ## [0.0.2] - 2026-02-18
 

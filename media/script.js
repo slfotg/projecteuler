@@ -12,7 +12,15 @@
         if ((matches = regex.exec(links[i].getAttribute("href"))) !== null) {
             links[i].addEventListener("click", function (e) {
                 e.preventDefault();
-                vscode.postMessage(matches[1]);
+                vscode.postMessage({"problem": matches[1]});
+            });
+        } else if (links[i].classList.contains("linked-resource")) {
+            links[i].addEventListener("click", function (e) {
+                e.preventDefault();
+                vscode.postMessage({
+                    "download": links[i].getAttribute("href"),
+                    "filename": links[i].innerText
+                });
             });
         }
     }

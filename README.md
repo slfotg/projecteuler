@@ -20,6 +20,10 @@ Command palette search to search for and display problems by their problem numbe
 
 ![search](images/search.png)
 
+Text files associated with problems can be opened in a new editor and saved or viewed from there.
+
+![poker](images/poker.gif)
+
 ## Requirements
 
 VSCode 1.109.0 or higher
