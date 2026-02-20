@@ -6,6 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.5] - 2026-02-20
+
 - Fix MathJax rendering
 - Better-ish error handling when downloading problem data
 
@@ -49,7 +51,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added Codelens links to quickly open problems from code
 - Added a search command to search for problems by number
 
-[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.4...HEAD
+[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.5...HEAD
+[0.0.5]: https://github.com/slfotg/projecteuler/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/slfotg/projecteuler/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/slfotg/projecteuler/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/slfotg/projecteuler/compare/v0.0.1...v0.0.2
