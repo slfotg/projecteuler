@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as cheerio from "cheerio";
 import { Command } from "./config";
 import { ProblemData, ProblemDataService } from "./service";
 
@@ -128,6 +129,20 @@ export class ProblemViewProvider {
         return !!this.visibleProblems[id];
     }
 
+    private async _loadProblemHtml(webview: vscode.Webview, id: number) {
+        const $ = cheerio.load(await this.problemDataService.loadProblemHtml(id));
+
+        // fix <img src="...">
+        $("img").each((_, image) => {
+            if (image.attribs && image.attribs.src && (image.attribs.src.startsWith("/resources") || image.attribs.src.startsWith("resources"))) {
+                let path = image.attribs.src;
+                image.attribs.src = `${webview.asWebviewUri(vscode.Uri.joinPath(this.problemDataService.getStorageUri(), path))}`;
+            }
+        });
+
+        return $.html();
+    }
+
     private async _showWebView(id: number) {
         let panel = vscode.window.createWebviewPanel(
             "eulerProblemView",
@@ -140,23 +155,24 @@ export class ProblemViewProvider {
                 localResourceRoots: [this.mediaUri, this.globalStorageUri] // restrict resources
             },
         );
-        let html = await this.problemDataService.getProblemData(id, panel);
-        this._registerProblemView(id, panel);
         panel.iconPath = vscode.Uri.parse("https://projecteuler.net/favicons/favicon.ico");
-        const styleMainUri = panel.webview.asWebviewUri(this.styleMainUri);
-        const scriptUri = panel.webview.asWebviewUri(this.scriptUri);
-        const mathjaxConfig = panel.webview.asWebviewUri(this.mathjaxConfig);
+        this._registerProblemView(id, panel);
+        try {
+            const html = await this._loadProblemHtml(panel.webview, id);
+            const styleMainUri = panel.webview.asWebviewUri(this.styleMainUri);
+            const scriptUri = panel.webview.asWebviewUri(this.scriptUri);
+            const mathjaxConfig = panel.webview.asWebviewUri(this.mathjaxConfig);
 
-        let subtitle = "";
-        let subtitleData = await this.problemDataService.getTitle(id);
-        if (subtitleData) {
-            subtitle = `${subtitleData}`;
-        } else {
-            subtitle = "";
-            console.warn("Problem info not found in global state");
-        }
+            let subtitle = "";
+            let subtitleData = await this.problemDataService.getTitle(id);
+            if (subtitleData) {
+                subtitle = `${subtitleData}`;
+            } else {
+                subtitle = "";
+                console.warn("Problem info not found in global state");
+            }
 
-        panel.webview.html = `<!DOCTYPE html>
+            panel.webview.html = `<!DOCTYPE html>
             <html lang="en">
             <head>
                 <meta charset="UTF-8">
@@ -185,7 +201,24 @@ export class ProblemViewProvider {
 
                 <script src="${scriptUri}"></script>
             </body>
-            </html>
-    `;
+            </html>`;
+        } catch {
+            panel.dispose();
+            vscode.window.showErrorMessage(`Error loading content for Problem ${id}.`, new RetryShowProblem(id));
+        }
+    }
+}
+
+class RetryShowProblem implements Thenable<void> {
+
+    readonly title: string = "Try Again";
+    private id: number;
+
+    constructor(id: number) {
+        this.id = id;
+    }
+
+    then<TResult1 = void, TResult2 = never>(): PromiseLike<TResult1 | TResult2> {
+        return vscode.commands.executeCommand(Command.Show, this.id);
     }
 }

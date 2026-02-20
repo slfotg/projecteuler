@@ -6,7 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Nothing yet
+- Fix MathJax rendering
+- Better-ish error handling when downloading problem data
 
 ## [0.0.4] - 2026-02-18
 
