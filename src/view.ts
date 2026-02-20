@@ -156,10 +156,6 @@ export class ProblemViewProvider {
             console.warn("Problem info not found in global state");
         }
 
-        // let fixedHtml = html.replaceAll('"resources/', '"https://projecteuler.net/resources/');
-        // fixedHtml = fixedHtml.replaceAll(/href="about=(\w+)"/g, "href=\"https://projecteuler.net/about=$1\"");
-        // let target = panel.webview.asWebviewUri(vscode.Uri.joinPath(this.globalStorageUri, "resources", "images", "0015.png"));
-
         panel.webview.html = `<!DOCTYPE html>
             <html lang="en">
             <head>
@@ -173,7 +169,8 @@ export class ProblemViewProvider {
                         object-src 'none';
                         base-uri 'self';
                         frame-ancestors 'self';
-                        worker-src 'self' blob:;">
+                        worker-src 'self' blob:;
+                        font-src * data: blob: 'unsafe-inline' vscode-webview-resource:;">
                 <link href="${styleMainUri}" rel="stylesheet">
                 <title>Problem ${id}</title>
             </head>
