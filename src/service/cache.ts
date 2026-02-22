@@ -1,93 +1,24 @@
 import * as vscode from "vscode";
 import * as cheerio from "cheerio";
-import Papa from "papaparse";
-import { Command } from "./config";
-
-export interface ProblemData {
-    "ID": number,
-    "Title": string,
-    "Published"?: string,
-    "Solved By"?: number,
-    "Solve Status"?: number,
-}
+import * as config from "../config";
 
 interface Resource {
-    downloadUri: vscode.Uri,
-    path: vscode.Uri,
+    downloadUri: vscode.Uri;
+    path: vscode.Uri;
 }
 
 interface ProblemResources {
-    id: number,
-    htmlPath: vscode.Uri,
-    resources: Resource[],
+    id: number;
+    htmlPath: vscode.Uri;
+    resources: Resource[];
 }
 
-export class ProblemDataService {
-    public static basePath: vscode.Uri = vscode.Uri.parse("https://projecteuler.net");
-    private static problemInfoKey: string = "euler.problem-info";
-    private context: vscode.ExtensionContext;
-
-    constructor(context: vscode.ExtensionContext) {
-        this.context = context;
-    }
-
-    public getStorageUri() {
-        return this.context.globalStorageUri;
-    }
-
-    public clearProblemInfo(): void {
-        this.context.globalState.update(ProblemDataService.problemInfoKey, undefined);
-        vscode.commands.executeCommand(Command.Refresh);
-    }
-
-    public getProblemInfo(): { [key: number]: ProblemData } {
-        const data = this.context.globalState.get(ProblemDataService.problemInfoKey);
-        if (data) {
-            return data as { [key: number]: ProblemData };
-        } else {
-            return {};
-        }
-    }
-
-    public async getTitle(id: number | string): Promise<string> {
-        let problemInfo = this.getProblemInfo();
-        if (Object.keys(problemInfo).length === 0) {
-            await this.updateProblemInfo();
-            problemInfo = this.getProblemInfo();
-            return (problemInfo && problemInfo[+id]) ? problemInfo[+id].Title : "";
-        } else {
-            return problemInfo[+id] ? problemInfo[+id].Title : "";
-        }
-    }
-
-    private async _fetchData(): Promise<string> {
-        let response = await fetch("https://projecteuler.net/minimal=problems");
-        return await response.text();
-    }
-
-    public async updateProblemInfo() {
-        let problemInfo: { [key: number]: ProblemData } = {};
-        let text: string = await this._fetchData();
-
-        var data = Papa.parse<ProblemData>(text, {
-            delimiter: "##",
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-        });
-
-        for (var record of data.data) {
-            problemInfo[record.ID] = record;
-        }
-
-        this.context.globalState.update(ProblemDataService.problemInfoKey, problemInfo);
-        await vscode.commands.executeCommand(Command.Refresh);
-    }
-
+export class ResourceCacheService {
+    constructor(readonly globalStorageUri: vscode.Uri) {}
 
     /**
      * Retries 3 times to download from a Uri
-     * @param downloadUri 
+     * @param downloadUri
      * @returns Response from server
      */
     async getOkResponse(downloadUri: string): Promise<Response> {
@@ -105,7 +36,7 @@ export class ProblemDataService {
     async downloadResource(downloadUri: vscode.Uri): Promise<Resource> {
         let response = await this.getOkResponse(downloadUri.toString());
         let bytes = await response.bytes();
-        let target = vscode.Uri.joinPath(this.getStorageUri(), downloadUri.path);
+        let target = vscode.Uri.joinPath(this.globalStorageUri, downloadUri.path);
         await vscode.workspace.fs.writeFile(target, bytes);
 
         return {
@@ -115,7 +46,7 @@ export class ProblemDataService {
     }
 
     storedProblemUri(id: number) {
-        return vscode.Uri.joinPath(this.getStorageUri(), "problems", `${id}.html`);
+        return vscode.Uri.joinPath(this.globalStorageUri, "problems", `${id}.html`);
     }
 
     /**
@@ -130,7 +61,7 @@ export class ProblemDataService {
 
         // fix <img src="...">
         $("img").each((_, image) => {
-            if (image.attribs && image.attribs.src && (image.attribs.src.startsWith("/resources") || image.attribs.src.startsWith("resources"))) {
+            if (image.attribs?.src.startsWith("/resources") || image.attribs?.src.startsWith("resources")) {
                 let fileUri = vscode.Uri.parse(image.attribs.src);
                 resourceUris.push(fileUri);
                 // store with file path only
@@ -147,7 +78,7 @@ export class ProblemDataService {
                     if (href.startsWith("about")) {
                         // about pages need absolute paths right now.
                         // these are not stored locally
-                        link.attribs.href = `${vscode.Uri.joinPath(ProblemDataService.basePath, href)}`;
+                        link.attribs.href = `${vscode.Uri.joinPath(config.Uri.basePath, href)}`;
                     } else if (href.startsWith("/resources") || href.startsWith("resources")) {
                         // added class for custom functionality to open in new editor
                         link.attribs.class = "linked-resource";
@@ -160,12 +91,16 @@ export class ProblemDataService {
         });
 
         // Download all resources at the same time
-        let resources = await Promise.all(resourceUris.map((fileUri) => {
-            let downloadUri = ProblemDataService.basePath.with({ path: fileUri.path, query: fileUri.query, fragment: fileUri.fragment });
-            return this.downloadResource(downloadUri);
-        }));
-        console.log("All downloads successful");
-        console.log(resources);
+        let resources = await Promise.all(
+            resourceUris.map((fileUri) => {
+                let downloadUri = config.Uri.basePath.with({
+                    path: fileUri.path,
+                    query: fileUri.query,
+                    fragment: fileUri.fragment,
+                });
+                return this.downloadResource(downloadUri);
+            }),
+        );
 
         let html = $.html();
 

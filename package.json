@@ -4,7 +4,7 @@
     "publisher": "slfotg",
     "description": "Allow viewing Project Euler problems from your editor",
     "icon": "images/euler.png",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "repository": {
         "type": "git",
         "url": "https://github.com/slfotg/projecteuler"
@@ -29,6 +29,31 @@
                 }
             }
         },
+        "commands": [
+            {
+                "command": "projecteuler.searchProblem",
+                "title": "Euler: Search Problem"
+            },
+            {
+                "command": "projecteuler.showProblem",
+                "title": "Show Problem",
+                "icon": "$(go-to-file)"
+            },
+            {
+                "command": "projecteuler.refreshMetadata",
+                "title": "Refresh Problem Data",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "projecteuler.clearMetadata",
+                "title": "Clear Problem Data"
+            },
+            {
+                "command": "projecteuler.newSubFolder",
+                "title": "New Folder",
+                "icon": "$(new-folder)"
+            }
+        ],
         "views": {
             "explorer": [
                 {
@@ -41,37 +66,39 @@
         "viewsWelcome": [
             {
                 "view": "projecteuler.problemView",
-                "contents": "No problem data found.\n[Refresh](command:projecteuler.loadProblemData)"
-            }
-        ],
-        "commands": [
-            {
-                "command": "projecteuler.searchProblem",
-                "title": "Euler: Search Problem"
-            },
-            {
-                "command": "projecteuler.showProblem",
-                "title": "Euler: Show Problem"
-            },
-            {
-                "command": "projecteuler.refreshTree",
-                "title": "Euler: Refresh Tree"
-            },
-            {
-                "command": "projecteuler.clearTreeData",
-                "title": "Euler: Clear Tree Data"
-            },
-            {
-                "command": "projecteuler.loadProblemData",
-                "title": "Euler: Load Problem Data"
+                "contents": "No problem data found.\n[Refresh](command:projecteuler.refreshMetadata)"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
                     "command": "projecteuler.searchProblem"
+                },
+                {
+                    "command": "projecteuler.showProblem",
+                    "when": "never"
+                },
+                {
+                    "command": "projecteuler.refreshMetadata",
+                    "when": "never"
+                },
+                {
+                    "command": "projecteuler.clearMetadata",
+                    "when": "never"
+                },
+                {
+                    "command": "projecteuler.newSubFolder",
+                    "when": "never"
                 }
-            ]
+            ],
+            "view/title": [
+                {
+                    "command": "projecteuler.refreshMetadata",
+                    "when": "view == projecteuler.problemView",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": []
         }
     },
     "scripts": {

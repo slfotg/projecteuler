@@ -1,67 +1,16 @@
 import * as vscode from "vscode";
 import * as cheerio from "cheerio";
-import { Command } from "./config";
-import { ProblemData, ProblemDataService } from "./service";
-
-export class ProblemTreeDataProvider implements vscode.TreeDataProvider<ProblemData> {
-    private _onDidChangeTreeData: vscode.EventEmitter<void | ProblemData | ProblemData[] | null | undefined> = new vscode.EventEmitter<void | ProblemData | ProblemData[] | null | undefined>();
-    readonly onDidChangeTreeData: vscode.Event<void | ProblemData | ProblemData[] | null | undefined> = this._onDidChangeTreeData.event;
-
-    private problemDataService: ProblemDataService;
-
-    constructor(problemDataService: ProblemDataService) {
-        this.problemDataService = problemDataService;
-    }
-
-    refresh(): void {
-        this._onDidChangeTreeData.fire();
-    }
-
-    getTreeItem(element: ProblemData): vscode.TreeItem {
-        let item = new vscode.TreeItem(`Problem ${element.ID}: ${element.Title}`);
-        item.resourceUri = vscode.Uri.parse(`https://projecteuler.net/problem=${element.ID}?solved=${element["Solve Status"]}`);
-        item.command = {
-            title: `Show Problem ${element.ID}`,
-            tooltip: `Show Problem ${element.ID}`,
-            command: Command.Show,
-            arguments: [element.ID],
-        };
-        item.tooltip = `Show Problem ${element.ID}`;
-        return item;
-    }
-
-    getChildren(element?: ProblemData | undefined): vscode.ProviderResult<ProblemData[]> {
-        if (element) {
-            return Promise.resolve([]);
-        } else {
-            return Promise.resolve(Object.values(this.problemDataService.getProblemInfo()));
-        }
-    }
-
-}
-
-export class ProblemTreeDecorationProvider implements vscode.FileDecorationProvider {
-    onDidChangeFileDecorations?: vscode.Event<vscode.Uri | vscode.Uri[] | undefined> | undefined;
-    provideFileDecoration(uri: vscode.Uri, token: vscode.CancellationToken): vscode.ProviderResult<vscode.FileDecoration> {
-        if (uri.scheme === "https" && uri.authority === "projecteuler.net") {
-            for (const param of uri.query.split("&")) {
-                if (param.trim() === "solved=1") {
-                    return new vscode.FileDecoration("✓", "Problem Solved", new vscode.ThemeColor("charts.green"));
-                }
-            };
-        }
-        return null;
-    }
-}
+import * as config from "../config";
+import { ProblemDataService, ResourceCacheService } from "../service";
 
 export class ProblemViewProvider {
-
     private mediaUri: vscode.Uri;
     private globalStorageUri: vscode.Uri;
     private styleMainUri: vscode.Uri;
     private scriptUri: vscode.Uri;
     private mathjaxConfig: vscode.Uri;
     private problemDataService: ProblemDataService;
+    private resourceCacheService: ResourceCacheService;
 
     private visibleProblems: { [key: number]: vscode.WebviewPanel } = {};
 
@@ -72,6 +21,7 @@ export class ProblemViewProvider {
         this.scriptUri = vscode.Uri.joinPath(context.extensionUri, "media", "script.js");
         this.mathjaxConfig = vscode.Uri.joinPath(context.extensionUri, "media", "mathjax.config.js");
         this.problemDataService = problemDataService;
+        this.resourceCacheService = new ResourceCacheService(this.globalStorageUri);
     }
 
     public showProblem(problemNumber?: string | number) {
@@ -92,7 +42,7 @@ export class ProblemViewProvider {
         this._showWebView(id);
     }
 
-    public _openExistingView(id: number) {
+    private _openExistingView(id: number) {
         const view = this.visibleProblems[id];
         if (!view) {
             throw new Error(`Problem view ${id} not found`);
@@ -107,18 +57,16 @@ export class ProblemViewProvider {
     private _registerProblemView(id: number, view: vscode.WebviewPanel) {
         this.visibleProblems[id] = view;
 
-        view.webview.onDidReceiveMessage(
-            (message) => {
-                if (message["problem"]) {
-                    vscode.commands.executeCommand(Command.Show, message["problem"]);
-                } else if (message["download"]) {
-                    const uri = vscode.Uri.parse('resource:' + message["filename"] + "?resource=" + message["download"]);
-                    vscode.workspace.openTextDocument(uri).then((doc) => {
-                        vscode.window.showTextDocument(doc);
-                    });
-                }
+        view.webview.onDidReceiveMessage((message) => {
+            if (message["problem"]) {
+                vscode.commands.executeCommand(config.Command.Show, message["problem"]);
+            } else if (message["download"]) {
+                const uri = vscode.Uri.parse("resource:" + message["filename"] + "?resource=" + message["download"]);
+                vscode.workspace.openTextDocument(uri).then((doc) => {
+                    vscode.window.showTextDocument(doc);
+                });
             }
-        );
+        });
 
         view.onDidDispose(() => {
             delete this.visibleProblems[id];
@@ -130,13 +78,13 @@ export class ProblemViewProvider {
     }
 
     private async _loadProblemHtml(webview: vscode.Webview, id: number) {
-        const $ = cheerio.load(await this.problemDataService.loadProblemHtml(id));
+        const $ = cheerio.load(await this.resourceCacheService.loadProblemHtml(id));
 
         // fix <img src="...">
         $("img").each((_, image) => {
-            if (image.attribs && image.attribs.src && (image.attribs.src.startsWith("/resources") || image.attribs.src.startsWith("resources"))) {
+            if (image.attribs?.src.startsWith("/resources") || image.attribs?.src.startsWith("resources")) {
                 let path = image.attribs.src;
-                image.attribs.src = `${webview.asWebviewUri(vscode.Uri.joinPath(this.problemDataService.getStorageUri(), path))}`;
+                image.attribs.src = `${webview.asWebviewUri(vscode.Uri.joinPath(this.globalStorageUri, path))}`;
             }
         });
 
@@ -144,18 +92,13 @@ export class ProblemViewProvider {
     }
 
     private async _showWebView(id: number) {
-        let panel = vscode.window.createWebviewPanel(
-            "eulerProblemView",
-            `Problem ${id}`,
-            vscode.ViewColumn.One,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true,
-                enableFindWidget: true,
-                localResourceRoots: [this.mediaUri, this.globalStorageUri] // restrict resources
-            },
-        );
-        panel.iconPath = vscode.Uri.parse("https://projecteuler.net/favicons/favicon.ico");
+        let panel = vscode.window.createWebviewPanel("eulerProblemView", `Problem ${id}`, vscode.ViewColumn.One, {
+            enableScripts: true,
+            retainContextWhenHidden: true,
+            enableFindWidget: true,
+            localResourceRoots: [this.mediaUri, this.globalStorageUri], // restrict resources
+        });
+        panel.iconPath = config.Uri.iconPath;
         this._registerProblemView(id, panel);
         try {
             const html = await this._loadProblemHtml(panel.webview, id);
@@ -210,7 +153,6 @@ export class ProblemViewProvider {
 }
 
 class RetryShowProblem implements Thenable<void> {
-
     readonly title: string = "Try Again";
     private id: number;
 
@@ -219,6 +161,6 @@ class RetryShowProblem implements Thenable<void> {
     }
 
     then<TResult1 = void, TResult2 = never>(): PromiseLike<TResult1 | TResult2> {
-        return vscode.commands.executeCommand(Command.Show, this.id);
+        return vscode.commands.executeCommand(config.Command.Show, this.id);
     }
 }

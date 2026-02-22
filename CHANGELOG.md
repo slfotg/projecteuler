@@ -6,6 +6,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.6] - 2026-02-21
+
+- Major refactoring with possible breaking changes (Sorry... this is still beta)
+- Added a refresh button to the Problem tree view
+
 ## [0.0.5] - 2026-02-20
 
 - Fix MathJax rendering
