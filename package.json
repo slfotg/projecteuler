@@ -32,7 +32,13 @@
         "commands": [
             {
                 "command": "projecteuler.searchProblem",
-                "title": "Euler: Search Problem"
+                "title": "Euler: Search Problem",
+                "icon": "$(search)"
+            },
+            {
+                "command": "projecteuler.pickProblem",
+                "title": "Search Problem",
+                "icon": "$(search)"
             },
             {
                 "command": "projecteuler.showProblem",
@@ -75,6 +81,10 @@
                     "command": "projecteuler.searchProblem"
                 },
                 {
+                    "command": "projecteuler.pickProblem",
+                    "when": "never"
+                },
+                {
                     "command": "projecteuler.showProblem",
                     "when": "never"
                 },
@@ -94,6 +104,11 @@
             "view/title": [
                 {
                     "command": "projecteuler.refreshMetadata",
+                    "when": "view == projecteuler.problemView",
+                    "group": "navigation"
+                },
+                {
+                    "command": "projecteuler.pickProblem",
                     "when": "view == projecteuler.problemView",
                     "group": "navigation"
                 }

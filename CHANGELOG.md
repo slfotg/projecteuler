@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- Updated Search functionality
+- Added Search button to tree view title
+- Styling fixes
+
 ## [0.0.6] - 2026-02-21
 
 - Major refactoring with possible breaking changes (Sorry... this is still beta)

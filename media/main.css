@@ -31,6 +31,14 @@ hr {
     width: 100%;
 }
 
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: left;
+    width: 100%;
+    max-width: 1000px;
+}
 
 pre {
     margin: 0;
@@ -146,4 +154,9 @@ dfn.tooltip, strong.tooltip {
 
 .tooltip:hover .tooltiptext, .tooltip:hover .tooltiptext_narrow, .tooltip:hover .tooltiptext_left, .tooltip:hover .tooltiptext_right, .tooltip:hover .tooltiptext_wide, .tooltip:hover .tooltiptext_narrower {
    visibility: visible;
+}
+
+blockquote {
+    background: none;
+    border-color: none;
 }

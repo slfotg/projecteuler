@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 
 export enum Command {
     Search = "projecteuler.searchProblem",
+    Pick = "projecteuler.pickProblem",
     Show = "projecteuler.showProblem",
     Refresh = "projecteuler.refreshMetadata",
     Clear = "projecteuler.clearMetadata",
