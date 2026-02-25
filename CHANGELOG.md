@@ -6,6 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.7] - 2026-02-25
+
 - Updated Search functionality
 - Added Search button to tree view title
 - Styling fixes
@@ -60,7 +62,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added Codelens links to quickly open problems from code
 - Added a search command to search for problems by number
 
-[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/slfotg/projecteuler/compare/v0.0.6...v0.0.7
+[0.0.6]: https://github.com/slfotg/projecteuler/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/slfotg/projecteuler/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/slfotg/projecteuler/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/slfotg/projecteuler/compare/v0.0.2...v0.0.3
