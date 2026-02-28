@@ -185,7 +185,19 @@
                     "fontCharacter": "\\E01D"
                 }
             }
-        }
+        },
+        "colors": [
+            {
+                "id": "euler.iconColor",
+                "description": "Color for Project Euler icon.",
+                "defaults": {
+                    "dark": "#519aba",
+                    "light": "#498ba7",
+                    "highContrast": "#010203",
+                    "highContrastLight": "#feedc3"
+                }
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run package",

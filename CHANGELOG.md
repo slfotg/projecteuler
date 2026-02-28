@@ -6,6 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- update icon color and made configurable
+
 ## [0.0.9] - 2026-02-27
 
 - updated file icons

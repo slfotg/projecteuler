@@ -55,7 +55,7 @@ export class ProblemDataTreeItem extends vscode.TreeItem {
             };
             item.tooltip = `Show Problem ${element.ID}`;
             item.contextValue = "euler_problem";
-            item.iconPath = new vscode.ThemeIcon("euler-problem", new vscode.ThemeColor("button.foreground"));
+            item.iconPath = new vscode.ThemeIcon("euler-problem", new vscode.ThemeColor("euler.iconColor"));
             return item;
         } else {
             return new ProblemDataTreeItem("", false);
