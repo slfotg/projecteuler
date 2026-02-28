@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.9] - 2026-02-27
+
+- updated file icons
+
 ## [0.0.8] - 2026-02-27
 
 - Updated fileicons for euler problems
@@ -72,7 +76,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added Codelens links to quickly open problems from code
 - Added a search command to search for problems by number
 
-[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.8...HEAD
+[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.9...HEAD
+[0.0.9]: https://github.com/slfotg/projecteuler/compare/v0.0.7...v0.0.9
 [0.0.8]: https://github.com/slfotg/projecteuler/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/slfotg/projecteuler/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/slfotg/projecteuler/compare/v0.0.5...v0.0.6

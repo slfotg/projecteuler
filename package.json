@@ -4,7 +4,7 @@
     "publisher": "slfotg",
     "description": "Allow viewing Project Euler problems from your editor",
     "icon": "images/euler.png",
-    "version": "0.0.8",
+    "version": "0.0.9",
     "repository": {
         "type": "git",
         "url": "https://github.com/slfotg/projecteuler"
@@ -177,13 +177,15 @@
                 }
             ]
         },
-        "iconThemes": [
-            {
-                "id": "euler",
-                "label": "euler",
-                "path": "./fileicons/euler-icon-theme.json"
+        "icons": {
+            "euler-problem": {
+                "description": "Project Euler icon",
+                "default": {
+                    "fontPath": "./fileicons/seti.woff",
+                    "fontCharacter": "\\E01D"
+                }
             }
-        ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run package",
