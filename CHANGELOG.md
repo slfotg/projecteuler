@@ -6,6 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.0.8] - 2026-02-27
+
+- Updated fileicons for euler problems
+- Added a favorites view for organizing problems
+- Problems are draggable from the Problems view into the Favorites View
+- Problem titles can be dragged into Favorites view from the webview of the problem
+- Added buttons for new folders / adding to favorites / removing from favorites
+- Favorites are stored in workspace
+- Added new view for Euler with activity bar icon
+
 ## [0.0.7] - 2026-02-25
 
 - Updated Search functionality
@@ -62,7 +72,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Added Codelens links to quickly open problems from code
 - Added a search command to search for problems by number
 
-[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.7...HEAD
+[Unreleased]: https://github.com/slfotg/projecteuler/compare/v0.0.8...HEAD
+[0.0.8]: https://github.com/slfotg/projecteuler/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/slfotg/projecteuler/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/slfotg/projecteuler/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/slfotg/projecteuler/compare/v0.0.4...v0.0.5

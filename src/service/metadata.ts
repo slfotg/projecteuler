@@ -10,28 +10,41 @@ export interface ProblemData {
     "Solve Status"?: number;
 }
 
+export interface ProblemMetadata {
+    version?: string,
+    problemData: ProblemData[],
+}
+
 export class ProblemDataService {
     private _onProblemDataChanged: vscode.EventEmitter<ProblemData[] | undefined> = new vscode.EventEmitter<
         ProblemData[] | undefined
     >();
     readonly onProblemDataChanged: vscode.Event<ProblemData[] | undefined> = this._onProblemDataChanged.event;
 
+    private static currentVersion: string = "1";
     private static problemInfoKey: string = "euler.problem-info";
     private context: vscode.ExtensionContext;
-    private titles: { [key: number]: string } = {};
+    private metadata: ProblemMetadata = {
+        version: ProblemDataService.currentVersion,
+        problemData: []
+    };
 
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
+        this._init();
     }
 
-    public init() {
-        // use finally in case site is down, then we can use previously cached metadata if it exists
-        this.refreshMetadata().finally(() => this._updateTitles());
+    private _init() {
+        const data = this.context.globalState.get(ProblemDataService.problemInfoKey) as ProblemMetadata;
+        if (data.version && data.version === ProblemDataService.currentVersion) {
+            this.metadata = data;
+        } else {
+            this.refreshMetadata();
+        }
     }
 
     public async refreshMetadata() {
         let text: string = await this._fetchData();
-
         var data = Papa.parse<ProblemData>(text, {
             delimiter: "##",
             header: true,
@@ -43,31 +56,22 @@ export class ProblemDataService {
     }
 
     public clearMetadata(): void {
-        this._setMetadata(undefined);
+        this.context.globalState.update(ProblemDataService.problemInfoKey, undefined);
     }
 
     public getProblemInfo(): ProblemData[] {
-        const data = this.context.globalState.get(ProblemDataService.problemInfoKey);
-        if (data) {
-            return data as ProblemData[];
-        } else {
-            return [];
-        }
+        return this.metadata.problemData;
     }
 
     public getTitle(id: number | string): string {
-        return this.titles[+id] ? this.titles[+id] : "";
+        return this.metadata?.problemData[+id] ? this.metadata?.problemData[+id].Title : "";
     }
 
-    private _updateTitles() {
-        this.titles = {};
-        let problemInfo: ProblemData[] = this.getProblemInfo();
-        problemInfo.forEach((problemData) => (this.titles[problemData.ID] = problemData.Title));
-    }
-
-    private _setMetadata(problemData?: ProblemData[]) {
-        this.context.globalState.update(ProblemDataService.problemInfoKey, problemData);
-        this._updateTitles();
+    private _setMetadata(problemData: ProblemData[]) {
+        for (const problem of problemData) {
+            this.metadata.problemData[problem.ID] = problem;
+        }
+        this.context.globalState.update(ProblemDataService.problemInfoKey, this.metadata);
         this._onProblemDataChanged.fire(problemData);
     }
 

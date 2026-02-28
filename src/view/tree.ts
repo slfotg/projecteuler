@@ -1,52 +1,49 @@
 import * as vscode from "vscode";
-import { Command } from "../config";
-import { ProblemData, ProblemDataService } from "../service";
+import { ProblemDataService } from "../service";
+import { ProblemDataTreeItem } from "../view";
 
-export class ProblemTreeDataProvider implements vscode.TreeDataProvider<ProblemData> {
-    private _onDidChangeTreeData: vscode.EventEmitter<void | ProblemData | ProblemData[] | null | undefined> =
-        new vscode.EventEmitter<void | ProblemData | ProblemData[] | null | undefined>();
-    readonly onDidChangeTreeData: vscode.Event<void | ProblemData | ProblemData[] | null | undefined> =
+export class ProblemTreeDataProvider implements vscode.TreeDataProvider<ProblemDataTreeItem>, vscode.TreeDragAndDropController<ProblemDataTreeItem> {
+    private _onDidChangeTreeData: vscode.EventEmitter<void | ProblemDataTreeItem | ProblemDataTreeItem[] | null | undefined> =
+        new vscode.EventEmitter<void | ProblemDataTreeItem | ProblemDataTreeItem[] | null | undefined>();
+    readonly onDidChangeTreeData: vscode.Event<void | ProblemDataTreeItem | ProblemDataTreeItem[] | null | undefined> =
         this._onDidChangeTreeData.event;
 
-    private data: ProblemData[];
+    private data: ProblemDataTreeItem[];
+    dropMimeTypes: readonly string[] = [];
+    dragMimeTypes: readonly string[] = ["application/vnd.code.tree.projecteuler.problemView", "text/uri-list", "text/plain"];
 
     constructor(
         private problemDataService: ProblemDataService,
         private context: vscode.ExtensionContext,
     ) {
-        let data = this.context.workspaceState.get("euler.problemData");
+        const data = this.problemDataService.getProblemInfo();
         if (data) {
-            this.data = data as ProblemData[];
+            this.data = data.filter((element) => element !== null).map((element) => ProblemDataTreeItem.fromProblemData(element));
         } else {
             this.data = [];
         }
         this.problemDataService.onProblemDataChanged(() => this.refresh());
     }
 
+    handleDrag(source: readonly ProblemDataTreeItem[], dataTransfer: vscode.DataTransfer, token: vscode.CancellationToken): Thenable<void> | void {
+        if (source) {
+            dataTransfer.set("application/vnd.code.tree.projecteuler.problemView", new vscode.DataTransferItem(source));
+        }
+    }
+
     refresh(): void {
-        this.data = this.problemDataService.getProblemInfo();
+        const data = this.problemDataService.getProblemInfo();
+        this.data = data.filter((element) => element !== null).map((element) => ProblemDataTreeItem.fromProblemData(element));
         this._onDidChangeTreeData.fire();
     }
 
-    getTreeItem(element: ProblemData): vscode.TreeItem {
-        let item = new vscode.TreeItem(`${element.ID}:`);
-        item.description = `${element.Title}`;
-        item.resourceUri = vscode.Uri.parse(
-            `https://projecteuler.net/problem=${element.ID}?solved=${element["Solve Status"]}`,
-        );
-        item.command = {
-            title: `Show Problem ${element.ID}`,
-            tooltip: `Show Problem ${element.ID}`,
-            command: Command.Show,
-            arguments: [element.ID],
-        };
-        item.tooltip = `Show Problem ${element.ID}`;
-        return item;
+    getTreeItem(element: ProblemDataTreeItem): vscode.TreeItem {
+        return element
     }
 
-    getChildren(element?: ProblemData | undefined): vscode.ProviderResult<ProblemData[]> {
+    getChildren(element?: ProblemDataTreeItem | undefined): vscode.ProviderResult<ProblemDataTreeItem[]> {
         if (element) {
-            return Promise.resolve([]);
+            return Promise.resolve(element.children);
         } else {
             return Promise.resolve(this.data);
         }

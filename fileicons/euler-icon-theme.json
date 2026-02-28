@@ -1,0 +1,46 @@
+{
+    "fonts": [
+        {
+            "id": "seti",
+            "src": [
+                {
+                    "path": "./seti.woff",
+                    "format": "woff"
+                }
+            ],
+            "weight": "normal",
+            "style": "normal",
+            "size": "150%"
+        }
+    ],
+    "iconDefinitions": {
+        "_euler_light": {
+            "fontCharacter": "\\E01D",
+            "fontColor": "#498ba7"
+        },
+        "_euler": {
+            "fontCharacter": "\\E01D",
+            "fontColor": "#519aba"
+        },
+        "_euler_fav_light": {
+            "fontCharacter": "\\E02F",
+            "fontColor": "#b7b73b"
+        },
+        "_euler_fav": {
+            "fontCharacter": "\\E02F",
+            "fontColor": "#cbcb41"
+        },
+    },
+    "file": "_default",
+    "fileExtensions": {
+        "euler": "_euler",
+        "euler_fav": "_euler_fav"
+    },
+    "light": {
+        "file": "_default",
+        "fileExtensions": {
+            "euler": "_euler_light",
+            "euler_fav": "_euler_fav_light"
+        }
+    }
+}

@@ -4,7 +4,7 @@
     "publisher": "slfotg",
     "description": "Allow viewing Project Euler problems from your editor",
     "icon": "images/euler.png",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "repository": {
         "type": "git",
         "url": "https://github.com/slfotg/projecteuler"
@@ -58,13 +58,42 @@
                 "command": "projecteuler.newSubFolder",
                 "title": "New Folder",
                 "icon": "$(new-folder)"
+            },
+            {
+                "command": "projecteuler.newFolder",
+                "title": "New Folder",
+                "icon": "$(new-folder)"
+            },
+            {
+                "command": "projecteuler.addToFavorites",
+                "title": "Add to Favorites",
+                "icon": "$(heart)"
+            },
+            {
+                "command": "projecteuler.deleteFromFavorites",
+                "title": "Remove from Favorites",
+                "icon": "$(trash)"
             }
         ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "projecteuler",
+                    "title": "Project Euler",
+                    "icon": "images/logo.svg"
+                }
+            ]
+        },
         "views": {
-            "explorer": [
+            "projecteuler": [
+                {
+                    "id": "projecteuler.favorites",
+                    "name": "Favorites",
+                    "icon": "$(symbol-misc)"
+                },
                 {
                     "id": "projecteuler.problemView",
-                    "name": "Project Euler Problems",
+                    "name": "Problems",
                     "icon": "$(symbol-misc)"
                 }
             ]
@@ -99,6 +128,18 @@
                 {
                     "command": "projecteuler.newSubFolder",
                     "when": "never"
+                },
+                {
+                    "command": "projecteuler.newFolder",
+                    "when": "never"
+                },
+                {
+                    "command": "projecteuler.addToFavorites",
+                    "when": "never"
+                },
+                {
+                    "command": "projecteuler.deleteFromFavorites",
+                    "when": "never"
                 }
             ],
             "view/title": [
@@ -111,10 +152,38 @@
                     "command": "projecteuler.pickProblem",
                     "when": "view == projecteuler.problemView",
                     "group": "navigation"
+                },
+                {
+                    "command": "projecteuler.newFolder",
+                    "when": "view == projecteuler.favorites",
+                    "group": "navigation"
                 }
             ],
-            "view/item/context": []
-        }
+            "view/item/context": [
+                {
+                    "command": "projecteuler.addToFavorites",
+                    "when": "view == projecteuler.problemView && viewItem == euler_problem",
+                    "group": "inline"
+                },
+                {
+                    "command": "projecteuler.deleteFromFavorites",
+                    "when": "view == projecteuler.favorites && viewItem == euler_problem",
+                    "group": "inline"
+                },
+                {
+                    "command": "projecteuler.newSubFolder",
+                    "when": "view == projecteuler.favorites && viewItem == euler_folder",
+                    "group": "inline"
+                }
+            ]
+        },
+        "iconThemes": [
+            {
+                "id": "euler",
+                "label": "euler",
+                "path": "./fileicons/euler-icon-theme.json"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run package",

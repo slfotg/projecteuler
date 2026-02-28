@@ -99,6 +99,7 @@ export class ProblemViewProvider {
             localResourceRoots: [this.mediaUri, this.globalStorageUri], // restrict resources
         });
         panel.iconPath = config.Uri.iconPath;
+
         this._registerProblemView(id, panel);
         try {
             const html = await this._loadProblemHtml(panel.webview, id);

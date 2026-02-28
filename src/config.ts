@@ -6,6 +6,10 @@ export enum Command {
     Show = "projecteuler.showProblem",
     Refresh = "projecteuler.refreshMetadata",
     Clear = "projecteuler.clearMetadata",
+    NewFolder = "projecteuler.newFolder",
+    NewSubFolder = "projecteuler.newSubFolder",
+    AddToFavorites = "projecteuler.addToFavorites",
+    Delete = "projecteuler.deleteFromFavorites",
 }
 
 export class Uri {

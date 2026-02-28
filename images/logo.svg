@@ -1,0 +1,74 @@
+<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- <rect
+        x="0.75" y="0.75"
+        rx="3" ry="3"
+        width="22.5"
+        height="22.5"
+        stroke="#00f"
+        stroke-width="1.5" /> -->
+    
+<!-- 
+    <g 
+        id="top_bar"
+        transform="translate(0, 0)">
+            <path
+                id="rect76800"
+                fill="#000"
+                style="stroke:#000000;stroke-width:1.5"
+                d=" m 0.75,3.75
+                    c 0,-1.662 1.338,-3 3,-3
+                    h 16.5
+                    c 1.662,0 3,1.338 3,3
+                    z"
+            />
+    </g>
+    <g 
+        id="bottom_bar"
+        transform="translate(0, 24) scale(1,-1)">
+            <path
+                id="rect76800"
+                fill="#000"
+                style="stroke:#000000;stroke-width:1.5"
+                d=" m 0.75,3.75
+                    c 0,-1.662 1.338,-3 3,-3
+                    h 16.5
+                    c 1.662,0 3,1.338 3,3
+                    z"
+            />
+    </g> -->
+
+    <g 
+        id="top_bar"
+        transform="translate(0, 0)">
+            <path
+                id="rect76800"
+                fill="#000"
+                style="stroke:#000000;stroke-width:1.5"
+                d=" m 0,3.75
+                    h 24"
+            />
+    </g>
+    <g 
+        id="bottom_bar"
+        transform="translate(0, 24) scale(1,-1)">
+            <path
+                id="rect76800"
+                fill="#000"
+                style="stroke:#000000;stroke-width:1.5"
+                d=" m 0,3.75
+                    h 24"
+            />
+    </g>
+
+    <g
+     aria-label="PE"
+     transform="translate(0.1,17.9) scale(1.25, 1.25)"
+     fill="#000">
+    <path
+       d="M 0.93945313,-9.3056641 H 5.7192383 q 1.5615234,0 2.3359375,0.7426758 0.7807617,0.7426758 0.7807617,2.1137696 0,1.4091796 -0.8505859,2.2026367 -0.8442383,0.793457 -2.5834961,0.793457 H 3.8276367 V 0 H 0.93945313 Z m 2.88818357,3.9672852 h 0.7045899 q 0.8315429,0 1.1679687,-0.2856445 0.3364258,-0.2919922 0.3364258,-0.7426758 0,-0.4379883 -0.2919922,-0.7426758 Q 5.4526367,-7.4140625 4.6464844,-7.4140625 H 3.8276367 Z"
+       id="text_P" />
+    <path
+       d="m 10.333984,-9.3056641 h 7.706055 v 1.9868164 H 13.21582 v 1.479004 h 4.475098 v 1.8979492 H 13.21582 v 1.8344726 h 4.963867 V 0 h -7.845703 z"
+       id="text_E" />
+</g>
+</svg>
