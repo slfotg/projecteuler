@@ -10,6 +10,8 @@ export enum Command {
     NewSubFolder = "projecteuler.newSubFolder",
     AddToFavorites = "projecteuler.addToFavorites",
     Delete = "projecteuler.deleteFromFavorites",
+    Login = "projecteuler.login",
+    Logout = "projecteuler.logout",
 }
 
 export class Uri {

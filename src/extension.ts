@@ -5,6 +5,8 @@ import { ProblemData, ProblemDataService } from "./service";
 import { EulerLensProvider } from "./lens";
 import { EulerResourceProvider } from "./resource";
 import { FavoritesDataProvider } from "./view/favorites";
+import { LoginService } from "./service/login";
+import { LoginViewProvider } from "./view/login";
 
 interface SearchItem extends vscode.QuickPickItem {
     id: number,
@@ -51,7 +53,9 @@ async function newFolder(this: FavoritesDataProvider) {
 
 export function activate(context: vscode.ExtensionContext) {
     vscode.languages.registerCodeLensProvider("*", new EulerLensProvider());
-    const dataService = new ProblemDataService(context);
+    const loginService = new LoginService(context);
+    // loginService.setHeaders("asdf", "Asgahg");
+    const dataService = new ProblemDataService(context, loginService);
     const viewProvider = new ProblemViewProvider(context, dataService);
     const resourceProvider = new EulerResourceProvider(context);
     const treeProvider = new ProblemTreeDataProvider(dataService, context);
@@ -68,6 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
         canSelectMany: false,
         dragAndDropController: favoritesProvider
     });
+    const loginView = new LoginViewProvider(context.extensionUri, loginService);
     context.subscriptions.push(
         vscode.workspace.registerTextDocumentContentProvider("resource", resourceProvider),
         vscode.commands.registerCommand(Command.Search, search, dataService),
@@ -82,7 +87,21 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.registerFileDecorationProvider(new ProblemTreeDecorationProvider()),
         view,
         favorites,
+        vscode.window.registerWebviewViewProvider(LoginViewProvider.viewType, loginView),
+        vscode.commands.registerCommand(Command.Login, loginService.setHeaders, loginService),
+        vscode.commands.registerCommand(Command.Logout, loginService.logout, loginService),
     );
+    loginService.onLoginChanged((login) => {
+        console.log(`Logged in as "${login}"`);
+        if (login) {
+            vscode.commands.executeCommand('setContext', 'euler-is-logged-in', true);
+        } else {
+            vscode.commands.executeCommand('setContext', 'euler-is-logged-in', true);
+        }
+    });
+
+    // loginService.setHeaders("84e325abc853c8cb156dc0d9b086457c", "1772049052%23219584%23enm8f9IPHHgmAYF6T7YFRolMuLV60bfV");
+    // loginService.setHeaders("f5a9a57fcea661d21db5851dbb833588", "1772395633%232221906%23UdeNknuiQx4mpe9RrZpSZ9VvkFvgNivq");
 }
 
 // This method is called when your extension is deactivated

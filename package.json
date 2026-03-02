@@ -73,6 +73,16 @@
                 "command": "projecteuler.deleteFromFavorites",
                 "title": "Remove from Favorites",
                 "icon": "$(trash)"
+            },
+            {
+                "command": "projecteuler.login",
+                "title": "Login",
+                "icon": "$(log-in)"
+            },
+            {
+                "command": "projecteuler.logout",
+                "title": "Logout",
+                "icon": "$(log-out)"
             }
         ],
         "viewsContainers": {
@@ -86,6 +96,12 @@
         },
         "views": {
             "projecteuler": [
+                {
+                    "type": "webview",
+                    "id": "projecteuler.loginView",
+                    "name": "Login",
+                    "icon": "$(account)"
+                },
                 {
                     "id": "projecteuler.favorites",
                     "name": "Favorites",
@@ -140,6 +156,14 @@
                 {
                     "command": "projecteuler.deleteFromFavorites",
                     "when": "never"
+                },
+                {
+                    "command": "projecteuler.login",
+                    "when": "never"
+                },
+                {
+                    "command": "projecteuler.logout",
+                    "when": "never"
                 }
             ],
             "view/title": [
@@ -156,6 +180,11 @@
                 {
                     "command": "projecteuler.newFolder",
                     "when": "view == projecteuler.favorites",
+                    "group": "navigation"
+                },
+                {
+                    "command": "projecteuler.logout",
+                    "when": "view == projecteuler.loginView && euler-is-logged-in == true",
                     "group": "navigation"
                 }
             ],
@@ -226,6 +255,7 @@
         "webpack-cli": "^6.0.1"
     },
     "dependencies": {
+        "@vscode-elements/elements": "^2.5.1",
         "cheerio": "^1.2.0",
         "papaparse": "^5.5.3"
     }

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import Papa from "papaparse";
 import * as config from "../config";
+import { LoginService } from "./login";
 
 export interface ProblemData {
     ID: number;
@@ -23,15 +24,21 @@ export class ProblemDataService {
 
     private static currentVersion: string = "1";
     private static problemInfoKey: string = "euler.problem-info";
+    private headers: Headers;
     private context: vscode.ExtensionContext;
     private metadata: ProblemMetadata = {
         version: ProblemDataService.currentVersion,
         problemData: []
     };
 
-    constructor(context: vscode.ExtensionContext) {
+    constructor(context: vscode.ExtensionContext, loginService: LoginService) {
         this.context = context;
         this._init();
+
+        this.headers = loginService.getHeaders();
+
+        loginService.onHeadersChanged((headers) => this.headers = headers);
+        loginService.onLoginChanged(() => this.refreshMetadata());
     }
 
     private _init() {
@@ -76,7 +83,7 @@ export class ProblemDataService {
     }
 
     private async _fetchData(): Promise<string> {
-        let response = await fetch(config.Uri.metadataPath.toString());
+        let response = await fetch(config.Uri.metadataPath.toString(), { headers: this.headers });
         return await response.text();
     }
 }

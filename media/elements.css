@@ -1,0 +1,221 @@
+.vscode-form-group {
+    --label-right-margin: 14px;
+    --label-width: 150px;
+    --breakpoint: 320px;
+
+    display: flex;
+    flex-wrap: wrap;
+    margin: 15px 0;
+    max-width: 727px;
+}
+
+@container (width < 484px) {
+    .vscode-form-group {
+        display: block;
+    }
+}
+
+.vscode-form-group.settings-group {
+    margin: 0;
+    padding: 12px 14px 18px;
+    max-width: 727px;
+}
+
+.vscode-form-group.settings-group,
+.vscode-form-group.vertical {
+    display: block;
+}
+
+.vscode-form-group .vscode-checkbox-group,
+.vscode-form-group .vscode-radio-group {
+    width: calc(100% - calc(var(--label-width) + var(--label-right-margin)));
+}
+
+.vscode-form-group .vscode-label {
+    margin-right: var(--label-right-margin);
+    text-align: right;
+    width: var(--label-width);
+}
+
+.vscode-form-group.settings-group .vscode-label {
+    height: 18px;
+    line-height: 18px;
+    margin-bottom: 4px;
+    margin-right: 0;
+    padding: 0;
+}
+
+.vscode-form-group .vscode-form-helper {
+    margin-left: calc(var(--label-width) + var(--label-right-margin));
+}
+
+@container (width < 484px) {
+    .vscode-form-group .vscode-form-helper {
+        margin-left: 0;
+    }
+}
+
+.vscode-form-group.vertical .vscode-form-helper,
+.vscode-form-group.settings-group .vscode-form-helper {
+    display: block;
+    margin-left: 0;
+}
+
+.vscode-form-group.settings-group .vscode-form-helper {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+
+.vscode-form-group.vertical .vscode-label,
+.vscode-form-group.settings-group .vscode-label {
+    display: block;
+    margin-left: 0;
+    text-align: left;
+}
+
+@container (width < 484px) {
+    .vscode-form-group .vscode-label {
+        display: block;
+        margin-left: 0;
+        text-align: left;
+    }
+}
+
+.vscode-form-group.settings-group .vscode-textfield,
+.vscode-form-group.settings-group .vscode-textarea,
+.vscode-form-group.settings-group .vscode-select {
+    margin-top: 9px;
+}
+
+.vscode-form-group.vertical .vscode-button:first-child,
+.vscode-form-group.settings-group .vscode-button:first-child {
+    margin-left: calc(var(--label-width) + var(--label-right-margin));
+}
+
+.vscode-from-group .vscode-button {
+    margin-right: 4px;
+}
+.vscode-label {
+    color: var(--vscode-settings-headerForeground);
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    font-weight: 600;
+    line-height: 1.4em;
+    cursor: default;
+    display: block;
+    padding: 5px 0;
+}
+
+.vscode-label .pale {
+    color: var(--vscode-settings-headerForeground);
+    opacity: 0.9;
+}
+
+.vscode-label .normal {
+    font-weight: normal;
+}
+
+.vscode-label .italic {
+    font-style: italic;
+}
+.vscode-button {
+    align-items: center;
+    background-color: var(--vscode-button-background);
+    border-color: var(--vscode-button-border, var(--vscode-button-background));
+    border-style: solid;
+    border-radius: 2px;
+    border-width: 1px;
+    color: var(--vscode-button-foreground);
+    cursor: pointer;
+    display: inline-flex;
+    font-family: var(--vscode-font-family);
+    font-size: var(--vscode-font-size);
+    font-weight: var(--vscode-font-weight);
+    font-style: normal;
+    line-height: 22px;
+    overflow: hidden;
+    padding: 1px 13px;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.vscode-button:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
+
+.vscode-button:focus,
+.vscode-button:active {
+    outline: none;
+}
+
+.vscode-button:focus {
+    background-color: var(--vscode-button-hoverBackground);
+    outline: 1px solid var(--vscode-focusBorder);
+    outline-offset: 2px;
+}
+
+.vscode-button.secondary {
+    color: var(--vscode-button-secondaryForeground);
+    background-color: var(--vscode-button-secondaryBackground);
+    border-color: var(--vscode-button-border, var(--vscode-button-secondaryBackground));
+}
+
+.vscode-button.secondary:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.vscode-button.secondary:focus {
+    background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.vscode-button:disabled {
+    cursor: default;
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.vscode-button:disabled:hover {
+    background-color: var(--vscode-button-background);
+}
+
+.vscode-button:disabled {
+    background-color: var(--vscode-button-background);
+    outline: 0;
+}
+
+.vscode-button.secondary:disabled {
+    background-color: var(--vscode-button-secondaryBackground);
+}
+
+.vscode-button.secondary:disabled:hover {
+    background-color: var(--vscode-button-secondaryHoverBackground);
+}
+
+.vscode-button.block {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    width: 100%;
+}
+
+.vscode-button svg {
+    display: block;
+}
+
+.vscode-button .codicon,
+.vscode-button svg {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.vscode-button .codicon:first-child,
+.vscode-button svg:first-child {
+    margin-left: 0;
+}
+
+.vscode-button .codicon:last-child,
+.vscode-button svg:last-child {
+    margin-right: 0;
+}

@@ -45,7 +45,7 @@ export class ProblemDataTreeItem extends vscode.TreeItem {
             item.data = element;
             item.description = `${element.Title}`;
             item.resourceUri = vscode.Uri.parse(
-                `https://projecteuler.net/problem=${element.ID}.euler`,
+                `https://projecteuler.net/problem=${element.ID}.euler?solved=${element["Solve Status"]}`,
             );
             item.command = {
                 title: `Show Problem ${element.ID}`,
