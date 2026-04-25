@@ -4,10 +4,8 @@ import * as vscode from "vscode";
  * Provides access to text files associated with a problem in a new editor
  */
 export class EulerResourceProvider implements vscode.TextDocumentContentProvider {
-    private globalStorageUri: vscode.Uri;
 
-    constructor(context: vscode.ExtensionContext) {
-        this.globalStorageUri = context.globalStorageUri;
+    constructor(private globalStorageUri: vscode.Uri) {
     }
 
     provideTextDocumentContent(uri: vscode.Uri, _token: vscode.CancellationToken): vscode.ProviderResult<string> {

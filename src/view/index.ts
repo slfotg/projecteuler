@@ -1,68 +1,103 @@
 import * as vscode from "vscode";
-import { Command } from "../config";
+import { Command, Icons } from "../config";
 import { ProblemData, ProblemDataService } from "../service";
 
 export * from "./tree";
 export * from "./web";
 
-export interface Favorites {
-    folders: { [key: string]: Favorites },
-    problems: number[]
+/**
+ * Representation of data stored in the global or workspace state
+ * for initializing a tree view
+ */
+export interface StoredData {
+    folders: Folder[],
+    problems: Problem[],
 }
 
-export class ProblemDataTreeItem extends vscode.TreeItem {
+/**
+ * Represents a subitem within a folder or in the root.
+ * parentFolderId being `undefined` means it's in the root of a treeview.
+ */
+export interface SubItem {
+    id: string,
+    parentFolderId?: string,
+    state?: vscode.TreeItemCollapsibleState,
+}
 
-    public children: ProblemDataTreeItem[] = [];
-    public parent?: ProblemDataTreeItem;
-    public data?: ProblemData;
-    public favorites?: Favorites;
-
+export class SubItemTransferItem extends vscode.DataTransferItem {
     constructor(
-        public readonly label: string,
-        public readonly isFolder: boolean,
-        public readonly collapsibleState?: vscode.TreeItemCollapsibleState,
+        readonly value: SubItem[]
     ) {
-        super(label, collapsibleState)
+        super(value);
     }
+}
 
-    public addChild(child: ProblemDataTreeItem) {
-        if (this.isFolder) {
-            this.children.push(child);
-            child.parent = this;
-        }
-    }
+/**
+ * A folder/subfolder within a treeview.
+ * This is the same as RootFolder except with a uniquely identifiable id
+ * and a state that can be restored when reloading the workspace.
+ */
+export interface Folder extends SubItem {
+    name: string,
+    subFolders: Folder[],
+    problems: Problem[],
+}
 
-    public static newFolder(label: string, favorites: Favorites): ProblemDataTreeItem {
-        var item = new ProblemDataTreeItem(label, true, vscode.TreeItemCollapsibleState.Collapsed);
-        item.contextValue = "euler_folder";
-        item.favorites = favorites;
-        return item;
-    }
+export function folderToTreeItem(folder: Folder, lookup: { [key: string]: ProblemDataTreeItem }): ProblemDataTreeItem {
+    const item = {
+        item: folder,
+        collapsibleState: folder.state,
+        label: folder.name,
+        contextValue: "euler_folder",
+        id: folder.id,
+        children: [
+            ...folder.subFolders.map((folder) => folderToTreeItem(folder, lookup)),
+            ...folder.problems.filter((problem) => problem !== null).map((problem) => problemToTreeItem(problem))
+        ],
+        iconPath: Icons.getFolderIcon(folder.state),
+    };
 
-    public static fromProblemData(element?: ProblemData): ProblemDataTreeItem {
-        if (element) {
-            let item = new ProblemDataTreeItem(`Problem ${element.ID}`, false);
-            item.data = element;
-            item.description = `${element.Title}`;
-            item.resourceUri = vscode.Uri.parse(
-                `https://projecteuler.net/problem=${element.ID}.euler`,
-            );
-            item.command = {
-                title: `Show Problem ${element.ID}`,
-                tooltip: `Show Problem ${element.ID}`,
-                command: Command.Show,
-                arguments: [element.ID],
-            };
-            item.tooltip = `Show Problem ${element.ID}`;
-            item.contextValue = "euler_problem";
-            item.iconPath = new vscode.ThemeIcon("euler-problem", new vscode.ThemeColor("euler.iconColor"));
-            return item;
-        } else {
-            return new ProblemDataTreeItem("", false);
-        }
-    }
+    lookup[folder.id] = item;
 
-    public static fromProblemNumber(problemNumber: number, dataService: ProblemDataService): ProblemDataTreeItem {
-        return this.fromProblemData(dataService.getProblemInfo()[problemNumber]);
-    }
+    return item;
+}
+
+/**
+ * Represent problems within a folder.
+ */
+export interface Problem extends SubItem {
+    data: ProblemData,
+}
+
+
+export function problemToTreeItem(problem: Problem): ProblemItem {
+    return {
+        label: `Problem ${problem.data.ID}`,
+        item: problem,
+        id: problem.id,
+        contextValue: "euler_problem",
+        children: [],
+        description: problem.data.Title,
+        resourceUri: vscode.Uri.parse(
+            `https://projecteuler.net/problem=${problem.data.ID}`,
+        ),
+        command: {
+            title: `Show Problem ${problem.data.ID}`,
+            tooltip: `Show Problem ${problem.data.ID}`,
+            command: Command.Show,
+            arguments: [problem.data.ID],
+        },
+        tooltip: `Show Problem ${problem.data.ID}`,
+        iconPath: Icons.problem,
+    };
+}
+
+export interface ProblemDataTreeItem extends vscode.TreeItem {
+    id: string,
+    item: SubItem,
+    children: ProblemDataTreeItem[],
+}
+
+export interface ProblemItem extends ProblemDataTreeItem {
+    item: Problem,
 }

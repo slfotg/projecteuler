@@ -2,6 +2,12 @@ import * as vscode from "vscode";
 import Papa from "papaparse";
 import * as config from "../config";
 
+export interface SearchItem extends vscode.QuickPickItem {
+    id: number,
+    label: string,
+    description: string
+}
+
 export interface ProblemData {
     ID: number;
     Title: string;
@@ -15,7 +21,7 @@ export interface ProblemMetadata {
     problemData: ProblemData[],
 }
 
-export class ProblemDataService {
+export class ProblemDataService implements config.ContextConfigurable {
     private _onProblemDataChanged: vscode.EventEmitter<ProblemData[] | undefined> = new vscode.EventEmitter<
         ProblemData[] | undefined
     >();
@@ -32,6 +38,35 @@ export class ProblemDataService {
     constructor(context: vscode.ExtensionContext) {
         this.context = context;
         this._init();
+    }
+
+    configure(context: vscode.ExtensionContext): void {
+        console.log("Registering commands for metadata service");
+        context.subscriptions.push(
+            vscode.commands.registerCommand(config.Command.Search, this.search, this),
+            vscode.commands.registerCommand(config.Command.Pick, this.search, this),
+            vscode.commands.registerCommand(config.Command.Refresh, this.refreshMetadata, this),
+            vscode.commands.registerCommand(config.Command.Clear, this.clearMetadata, this),
+        );
+    }
+
+    public async search() {
+        const problemData: ProblemData[] = this.getProblemInfo();
+        const items = problemData.filter((data) => data !== null).map((data) => {
+            return {
+                id: data.ID,
+                label: `Problem ${data.ID}`,
+                description: data.Title,
+            } as SearchItem
+        });
+        vscode.window.showQuickPick(items,
+            {
+                title: `Search Euler Problems`,
+                placeHolder: "Problem Number or description",
+                ignoreFocusOut: true,
+                matchOnDescription: true,
+                matchOnDetail: true,
+            }).then((selected) => { if (selected) { vscode.commands.executeCommand(config.Command.Show, selected?.id) } });
     }
 
     private _init() {

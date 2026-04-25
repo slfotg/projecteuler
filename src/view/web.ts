@@ -2,8 +2,9 @@ import * as vscode from "vscode";
 import * as cheerio from "cheerio";
 import * as config from "../config";
 import { ProblemDataService, ResourceCacheService } from "../service";
+import { EulerResourceProvider } from "../resource";
 
-export class ProblemViewProvider {
+export class ProblemViewProvider implements config.ContextConfigurable {
     private mediaUri: vscode.Uri;
     private globalStorageUri: vscode.Uri;
     private styleMainUri: vscode.Uri;
@@ -22,6 +23,14 @@ export class ProblemViewProvider {
         this.mathjaxConfig = vscode.Uri.joinPath(context.extensionUri, "media", "mathjax.config.js");
         this.problemDataService = problemDataService;
         this.resourceCacheService = new ResourceCacheService(this.globalStorageUri);
+    }
+
+    configure(context: vscode.ExtensionContext): void {
+        const resourceProvider = new EulerResourceProvider(context.globalStorageUri);
+        context.subscriptions.push(
+            vscode.workspace.registerTextDocumentContentProvider("resource", resourceProvider),
+            vscode.commands.registerCommand(config.Command.Show, this.showProblem, this),
+        );
     }
 
     public showProblem(problemNumber?: string | number) {

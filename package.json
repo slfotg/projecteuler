@@ -67,12 +67,27 @@
             {
                 "command": "projecteuler.addToFavorites",
                 "title": "Add to Favorites",
-                "icon": "$(heart)"
+                "icon": "$(star)"
             },
             {
                 "command": "projecteuler.deleteFromFavorites",
                 "title": "Remove from Favorites",
                 "icon": "$(trash)"
+            },
+            {
+                "command": "projecteuler.groupProblems",
+                "title": "Group Problems",
+                "icon": "$(list-tree)"
+            },
+            {
+                "command": "projecteuler.ungroupProblems",
+                "title": "Show List View",
+                "icon": "$(list-ordered)"
+            },
+            {
+                "command": "projecteuler.clearFavorites",
+                "title": "Clear Favorites",
+                "icon": "$(clear-all)"
             }
         ],
         "viewsContainers": {
@@ -140,23 +155,50 @@
                 {
                     "command": "projecteuler.deleteFromFavorites",
                     "when": "never"
+                },
+                {
+                    "command": "projecteuler.groupProblems",
+                    "when": "never"
+                },
+                {
+                    "command": "projecteuler.ungroupProblems",
+                    "when": "never"
+                },
+                {
+                    "command": "projecteuler.clearFavorites",
+                    "when": "never"
                 }
             ],
             "view/title": [
                 {
                     "command": "projecteuler.refreshMetadata",
                     "when": "view == projecteuler.problemView",
-                    "group": "navigation"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "projecteuler.pickProblem",
                     "when": "view == projecteuler.problemView",
-                    "group": "navigation"
+                    "group": "navigation@2"
+                },
+                {
+                    "command": "projecteuler.groupProblems",
+                    "when": "view == projecteuler.problemView && projecteuler.listProblems == false",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "projecteuler.ungroupProblems",
+                    "when": "view == projecteuler.problemView && projecteuler.listProblems == true",
+                    "group": "navigation@4"
                 },
                 {
                     "command": "projecteuler.newFolder",
                     "when": "view == projecteuler.favorites",
-                    "group": "navigation"
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "projecteuler.clearFavorites",
+                    "when": "view == projecteuler.favorites",
+                    "group": "navigation@2"
                 }
             ],
             "view/item/context": [
@@ -193,6 +235,16 @@
                 "defaults": {
                     "dark": "#519aba",
                     "light": "#498ba7",
+                    "highContrast": "#010203",
+                    "highContrastLight": "#feedc3"
+                }
+            },
+            {
+                "id": "euler.folderColor",
+                "description": "Color for Project Euler icon.",
+                "defaults": {
+                    "dark": "#a074c4",
+                    "light": "#9068b0",
                     "highContrast": "#010203",
                     "highContrastLight": "#feedc3"
                 }
