@@ -11,8 +11,8 @@ export interface ProblemData {
 }
 
 export interface ProblemMetadata {
-    version?: string,
-    problemData: ProblemData[],
+    version?: string;
+    problemData: ProblemData[];
 }
 
 export class ProblemDataService {
@@ -26,7 +26,7 @@ export class ProblemDataService {
     private context: vscode.ExtensionContext;
     private metadata: ProblemMetadata = {
         version: ProblemDataService.currentVersion,
-        problemData: []
+        problemData: [],
     };
 
     constructor(context: vscode.ExtensionContext) {
@@ -35,8 +35,8 @@ export class ProblemDataService {
     }
 
     private _init() {
-        const data = this.context.globalState.get(ProblemDataService.problemInfoKey) as ProblemMetadata;
-        if (data.version && data.version === ProblemDataService.currentVersion) {
+        const data = this.context.globalState.get(ProblemDataService.problemInfoKey) as ProblemMetadata | undefined;
+        if (data?.version && data.version === ProblemDataService.currentVersion) {
             this.metadata = data;
         } else {
             this.refreshMetadata();
@@ -44,15 +44,19 @@ export class ProblemDataService {
     }
 
     public async refreshMetadata() {
-        let text: string = await this._fetchData();
-        var data = Papa.parse<ProblemData>(text, {
-            delimiter: "##",
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-        });
+        try {
+            let text: string = await this._fetchData();
+            var data = Papa.parse<ProblemData>(text, {
+                delimiter: "##",
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+            });
 
-        this._setMetadata(data.data);
+            this._setMetadata(data.data);
+        } catch (e) {
+            vscode.window.showErrorMessage(`Failed to fetch Project Euler data: ${e}`);
+        }
     }
 
     public clearMetadata(): void {
